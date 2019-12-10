@@ -1,6 +1,6 @@
 const express = require('express');
 
-const BodyParser = require('body-parser');
+const bodyParser = require('body-parser');
 
 const PORT = 8000;
 
@@ -10,8 +10,12 @@ const User = require('./models/user');
 
 const Post = require('./models/post');
 
-app.use(BodyParser.json());
-app.use(BodyParser.urlencoded({ extended: true }));
+const api = require('./routes/api');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/api', api);
 
 app.get('/', (req, res) => {
     for (let i = 100; i < 200; i++) {
