@@ -1,25 +1,33 @@
 const express = require('express');
 
-const mongoClient = require('mongodb').MongoClient;
-
-const mongoUrl = 'mongodb://localhost:27017/sharingconcerns';
+const BodyParser = require('body-parser');
 
 const PORT = 8000;
 
 const app = express();
 
-// make client connect to mongo service
-mongoClient.connect(mongoUrl, function (err, db) {
-    if (err) throw err;
-    console.log("Database created!");
-    // print database name
-    console.log("db object points to the database : " + db.databaseName);
-    // after completing all the operations with db, close it.
-    db.close();
-});
+const User = require('./models/user');
+
+const Post = require('./models/post');
+
+app.use(BodyParser.json());
+app.use(BodyParser.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-    res.send('not connected');
+    for (let i = 100; i < 200; i++) {
+        const user = new User({
+            email: `test${i}@test.com`,
+            username: `username${i}`,
+            password: `password${i}`,
+            firstName: `firstName${i}`,
+            lastName: `lastName${i}`,
+        });
+        user.save(err => {
+            if (err) throw err;
+            console.log(`user${i} has created`);
+        });
+    }
+    res.send('done');
 });
 
 const server = app.listen(PORT, () => {
