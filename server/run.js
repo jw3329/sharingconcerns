@@ -8,16 +8,18 @@ const PORT = 8000;
 
 const app = express();
 
+// make client connect to mongo service
+mongoClient.connect(mongoUrl, function (err, db) {
+    if (err) throw err;
+    console.log("Database created!");
+    // print database name
+    console.log("db object points to the database : " + db.databaseName);
+    // after completing all the operations with db, close it.
+    db.close();
+});
+
 app.get('/', (req, res) => {
-    // make client connect to mongo service
-    mongoClient.connect(mongoUrl, function (err, db) {
-        if (err) throw err;
-        console.log("Database created!");
-        // print database name
-        console.log("db object points to the database : " + db.databaseName);
-        // after completing all the operations with db, close it.
-        db.close();
-    });
+    res.send('not connected');
 });
 
 const server = app.listen(PORT, () => {
