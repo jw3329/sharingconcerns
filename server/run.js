@@ -18,20 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api', api);
 
 app.get('/', (req, res) => {
-    for (let i = 100; i < 200; i++) {
-        const user = new User({
-            email: `test${i}@test.com`,
-            username: `username${i}`,
-            password: `password${i}`,
-            firstName: `firstName${i}`,
-            lastName: `lastName${i}`,
-        });
-        user.save(err => {
-            if (err) throw err;
-            console.log(`user${i} has created`);
-        });
-    }
-    res.send('done');
+    res.send('home page');
 });
 
 const server = app.listen(PORT, () => {
