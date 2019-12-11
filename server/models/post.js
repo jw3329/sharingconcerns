@@ -1,8 +1,14 @@
 const Mongoose = require('../db');
 
 const PostSchema = new Mongoose.Schema({
-    title: String,
-    description: String,
+    title: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
     creationDate: {
         type: Date,
         required: true,

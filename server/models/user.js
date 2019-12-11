@@ -5,7 +5,9 @@ const UserSchema = new Mongoose.Schema({
         type: String,
         unique: true,
         required: true,
-        trim: true
+        trim: true,
+        minlength: 5,
+        maxlength: 255
     }, username: {
         type: String,
         unique: true,
@@ -15,24 +17,32 @@ const UserSchema = new Mongoose.Schema({
     password: {
         type: String,
         required: true,
+        minlength: 3,
+        maxlength: 255
     }, firstName: {
         type: String,
         required: true,
-        trim: true
+        trim: true,
+        lowercase: true,
+        maxlength: 25
     }, lastName: {
         type: String,
         required: true,
-        trim: true
-    }, posts: {
-        type: Array
-    }, creationDate: {
+        trim: true,
+        lowercase: true,
+        maxlength: 25
+    },
+    posts: [Mongoose.Schema.Types.ObjectId],
+    followers: [Mongoose.Schema.Types.ObjectId],
+    followees: [Mongoose.Schema.Types.ObjectId],
+    creationDate: {
         type: Date,
         required: true,
-        default: Date.now()
+        default: Date.now
     }, updateDate: {
         type: Date,
         required: true,
-        default: Date.now()
+        default: Date.now
     }
 });
 

@@ -1,1 +1,6 @@
+# ignoring all node modules packages
 **/node_modules
+
+# ignore vscode local settings
+
+**/.vscode
