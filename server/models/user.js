@@ -33,6 +33,7 @@ const UserSchema = new Mongoose.Schema({
         maxlength: 25
     },
     posts: [Mongoose.Schema.Types.ObjectId],
+    comments: [Mongoose.Schema.Types.ObjectId],
     followers: [Mongoose.Schema.Types.ObjectId],
     followees: [Mongoose.Schema.Types.ObjectId],
     creationDate: {

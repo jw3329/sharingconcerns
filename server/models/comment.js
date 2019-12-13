@@ -1,16 +1,11 @@
 const Mongoose = require('../db');
 
-const PostSchema = new Mongoose.Schema({
-    title: {
-        type: String,
-        required: true
-    },
+const CommentSchema = new Mongoose.Schema({
     description: {
         type: String,
         required: true
     },
     likes: [Mongoose.Schema.Types.ObjectId],
-    comments: [Mongoose.Schema.Types.ObjectId],
     creationDate: {
         type: Date,
         required: true,
@@ -23,6 +18,6 @@ const PostSchema = new Mongoose.Schema({
     }
 });
 
-const Post = Mongoose.model('Post', PostSchema);
+const Comment = Mongoose.model('Comment', CommentSchema);
 
-module.exports = Post;
+module.exports = Comment;
