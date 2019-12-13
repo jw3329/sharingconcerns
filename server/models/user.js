@@ -36,6 +36,7 @@ const UserSchema = new Mongoose.Schema({
     comments: [Mongoose.Schema.Types.ObjectId],
     followers: [Mongoose.Schema.Types.ObjectId],
     followees: [Mongoose.Schema.Types.ObjectId],
+    salt: String,
     creationDate: {
         type: Date,
         required: true,

@@ -12,3 +12,5 @@ class CodeError extends Error {
         this.code = code;
     }
 }
+
+module.exports = CodeError;
