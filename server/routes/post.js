@@ -6,8 +6,6 @@ const { auth } = require('../middlewares');
 post.post('/', auth, async (req, res, next) => {
     try {
         const data = await new Post(req.body).save();
-        console.log(data);
-        console.log(req.session);
         await User.findByIdAndUpdate(req.session.user._id, { $push: { posts: data._id } });
         res.json({ data, message: 'Successfully updated' });
     } catch (error) {

@@ -4,10 +4,12 @@ const { User } = require('../models');
 
 user.post('/signup', async (req, res, next) => {
     try {
-        const data = await new User(req.body).save();
-        res.send(data);
+        const user = await User.findOne({ $or: [{ email: req.body.email }, { username: req.body.username }] });
+        if (user) throw new Error('Given user exists');
+        await new User(req.body).save();
+        res.send('User has successfully created');
     } catch (error) {
-        next(error.message);
+        res.status(400).send(error.message);
     }
 });
 

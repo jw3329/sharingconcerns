@@ -8,10 +8,6 @@ const PORT = 8000;
 
 const app = express();
 
-const User = require('./models/user');
-
-const Post = require('./models/post');
-
 const api = require('./routes/api');
 
 app.use(bodyParser.json());
@@ -28,6 +24,6 @@ app.get('/', (req, res) => {
     res.send('home page');
 });
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log('Listening on port: ' + PORT);
 });
