@@ -6,7 +6,9 @@ const { auth } = require('../middlewares');
 post.post('/', auth, async (req, res, next) => {
     try {
         const data = await new Post(req.body).save();
-        await User.findByIdAndUpdate(req.session.userId, { $push: { posts: data._id } });
+        console.log(data);
+        console.log(req.session);
+        await User.findByIdAndUpdate(req.session.user._id, { $push: { posts: data._id } });
         res.json({ data, message: 'Successfully updated' });
     } catch (error) {
         next(error.message);
@@ -14,7 +16,6 @@ post.post('/', auth, async (req, res, next) => {
 });
 
 post.get('/:id', async (req, res, next) => {
-    console.log('here')
     try {
         const user = await Post.findById(req.params.id);
         res.json(user);

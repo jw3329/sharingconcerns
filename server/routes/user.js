@@ -13,9 +13,9 @@ user.post('/signup', async (req, res, next) => {
 
 user.post('/authorize', async (req, res, next) => {
     try {
-        const id = await User.findOne(req.body, '_id');
-        req.session.userId = id;
-        res.send(id);
+        const user = await User.findOne(req.body, { password: 0, posts: 0, followers: 0, followees: 0 });
+        req.session.user = user;
+        res.send(user);
     } catch (error) {
         next(error.message);
     }

@@ -1,6 +1,6 @@
 module.exports = (req, res, next) => {
-    const { userId } = req.session;
-    if (!userId) {
+    const { user } = req.session;
+    if (!user) {
         return res.status(401).send('No user found');
     }
     next();
