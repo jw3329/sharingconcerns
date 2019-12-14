@@ -3,8 +3,9 @@ const user = express.Router();
 const { User } = require('../models');
 const bcrypt = require('bcrypt');
 const CodeError = require('../error/code_error');
+const { auth } = require('../middlewares/index');
 
-user.post('/signup', async (req, res, next) => {
+user.post('/signup', async (req, res) => {
     try {
         const user = await User.findOne({ $or: [{ email: req.body.email }, { username: req.body.username }] });
         if (user) throw new CodeError(400, 'Given user exists');
@@ -17,14 +18,39 @@ user.post('/signup', async (req, res, next) => {
     }
 });
 
-user.post('/authorize', async (req, res, next) => {
+user.post('/authorize', async (req, res) => {
     try {
         if (req.session.user) throw new CodeError(400, 'User already has signed in');
         const user = await User.findOne({ username: req.body.username }, { posts: 0, followers: 0, followees: 0 });
-        if (!await bcrypt.compare(req.body.password, user.password)) throw new CodeError(401, 'Password does not match');
+        if (!user) throw new CodeError(400, 'User does not exist with given username');
+        if (!await bcrypt.compare(req.body.password, user.password)) throw new CodeError(400, 'Password does not match');
         user.password = undefined;
         req.session.user = user;
         res.send(user);
+    } catch (error) {
+        res.status(error.code).send(error.message);
+    }
+});
+
+user.post('/follow', auth, async (req, res) => {
+    try {
+        const { username } = req.body;
+        const follower = await User.findOneAndUpdate({ username }, { $push: { followers: req.session.user._id } });
+        if (!follower) throw new CodeError(400, 'The user does not exist');
+        await User.findByIdAndUpdate(req.session.user._id, { $push: { followees: follower._id } });
+        res.send('Successfully followed user');
+    } catch (error) {
+        res.status(error.code).send(error.message);
+    }
+});
+
+user.delete('/follow', auth, async (req, res) => {
+    try {
+        const { username } = req.body;
+        const follower = await User.findOneAndUpdate({ username }, { $pull: { followers: req.session.user._id } });
+        if (!follower) throw new CodeError(400, 'The user does not exist');
+        await User.findByIdAndUpdate(req.session.user._id, { $pull: { followees: follower._id } });
+        res.send('Successfully removed followee');
     } catch (error) {
         res.status(error.code).send(error.message);
     }
