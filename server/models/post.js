@@ -9,6 +9,10 @@ const PostSchema = new Mongoose.Schema({
         type: String,
         required: true
     },
+    views: {
+        type: Number,
+        default: 0
+    },
     likes: [Mongoose.Schema.Types.ObjectId],
     dislikes: [Mongoose.Schema.Types.ObjectId],
     comments: [Mongoose.Schema.Types.ObjectId],
