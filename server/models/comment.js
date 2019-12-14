@@ -6,6 +6,8 @@ const CommentSchema = new Mongoose.Schema({
         required: true
     },
     likes: [Mongoose.Schema.Types.ObjectId],
+    dislikes: [Mongoose.Schema.Types.ObjectId],
+    replies: [Mongoose.Schema.Types.ObjectId],
     creationDate: {
         type: Date,
         required: true,

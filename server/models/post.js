@@ -10,6 +10,7 @@ const PostSchema = new Mongoose.Schema({
         required: true
     },
     likes: [Mongoose.Schema.Types.ObjectId],
+    dislikes: [Mongoose.Schema.Types.ObjectId],
     comments: [Mongoose.Schema.Types.ObjectId],
     creationDate: {
         type: Date,
