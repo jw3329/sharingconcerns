@@ -8,10 +8,19 @@ For example,
 
 `/testing-this-url`
 
->This will indicate the link to make api request:
+> This will indicate the link to make api request:
 
 `http://SERVER_NAME/api/test/testing-this-url`
 
+## Authorized required:
+
+> The API that is needed to be authorize should have credential in the session. Otherwise it will have this error message:
+
+```json
+{
+    "message": "User is not authorized"
+}
+```
 
 ## User APIs `/user`
 
@@ -35,10 +44,17 @@ This API signs up the user
 > response
 
 - When successfully created (200)
-    - `User has successfully created`
+```json
+{
+    "message": "User has successfully created"
+}
+```
 - If user exists (400)
-    - `Given user exists`
-
+```json
+{
+    "message": "Given user exists"
+}
+```
 ### Authorizing the user
 `POST /authorize`
 
@@ -73,10 +89,116 @@ This API authorizes the user.
 }
 ```
 - If Already signed (400)
-    - `User already has signed in`
+```json
+{
+    "message": "User already has signed in"
+}
+```
 
 - If wrong password (400)
-    - `Password does not match`
-
+```json
+{
+    "message": "Password does not match"
+}
+```
 - If No user (400)
-    - `User does not exist with given username`
+```json
+{
+    "message": "User does not exist with given username"
+}
+```
+
+### Following the user
+
+`POST /follow` (Auth required)
+
+This API follows the user.
+
+> use case
+
+```json
+{
+	"username":"test_username2"
+}
+```
+
+> response
+- When successfully followed (200)
+```json
+{
+    "message": "Successfully followed user"
+}
+```
+
+- If username to follow does not exist (400)
+```json
+{
+    "message": "The user does not exist"
+}
+```
+
+### Following the user
+
+`DELETE /follow` (Auth required)
+
+This API unfollows the user.
+
+> use case
+
+```json
+{
+	"username":"test_username2"
+}
+```
+
+> response
+- When successfully unfollowed (200)
+```json
+{
+    "message": "Successfully removed followee"
+}
+```
+
+- If username to unfollow does not exist (400)
+```json
+{
+    "message": "The user does not exist"
+}
+```
+
+## Post APIs `/post`
+
+### Post the post
+
+`POST /` (Auth required)
+
+This API posts the post of user.
+
+> use case
+
+```json
+{
+	"title": "haha",
+	"description": "123123123"
+}
+```
+
+> response
+- When successfully created the post (200)
+```json
+{
+    "data": {
+        "views": 0,
+        "likes": [],
+        "dislikes": [],
+        "comments": [],
+        "_id": "5df57db0dd9ab606184bc901",
+        "title": "haha",
+        "description": "123123123",
+        "creationDate": "2019-12-15T00:26:24.007Z",
+        "updateDate": "2019-12-15T00:26:24.007Z",
+        "__v": 0
+    },
+    "message": "Successfully created"
+}
+```
