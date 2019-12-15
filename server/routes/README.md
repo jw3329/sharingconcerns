@@ -43,7 +43,7 @@ This API signs up the user
 
 > response
 
-- When successfully created (200)
+- When successfully created (201)
 ```json
 {
     "message": "User has successfully created"
@@ -184,7 +184,7 @@ This API posts the post of user.
 ```
 
 > response
-- When successfully created the post (200)
+- When successfully created the post (201)
 ```json
 {
     "data": {
@@ -200,5 +200,37 @@ This API posts the post of user.
         "__v": 0
     },
     "message": "Successfully created"
+}
+```
+
+### Comment on the post
+
+`POST /<post_thread>/comment` (Auth required)
+
+This API comments on the given thread post.
+
+> use case
+
+```json
+{
+	"description": "This is a comment testing purpose"
+}
+```
+
+> response
+- When successfully commented the post (201)
+```json
+{
+    "comment": {
+        "likes": [],
+        "dislikes": [],
+        "replies": [],
+        "_id": "5df5877216df040b073fdc65",
+        "description": "This is a comment testing purpose",
+        "creationDate": "2019-12-15T01:08:02.365Z",
+        "updateDate": "2019-12-15T01:08:02.365Z",
+        "__v": 0
+    },
+    "message": "Successfully created comment"
 }
 ```
