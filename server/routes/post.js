@@ -28,4 +28,14 @@ post.post('/:id/comment', auth, async (req, res) => {
     }
 });
 
+post.get('/:id/comments', async (req, res) => {
+    try {
+        const postComments = await Post.findById(req.params.id, { _id: 0, comments: 1 });
+        const comments = await Comment.find({ _id: { $in: postComments.comments } });
+        res.json(comments);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 module.exports = post;
