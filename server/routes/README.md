@@ -234,3 +234,35 @@ This API comments on the given thread post.
     "message": "Successfully created comment"
 }
 ```
+
+### Get all comments on the post
+
+`GET /<post_thread>/comments`
+
+This API gets all comments on the given thread post.
+
+> use case
+
+> response
+- When successfully got the comments (200)
+```json
+[
+    {
+        "likes": [],
+        "dislikes": [],
+        "replies": [],
+        "_id": "5df5877216df040b073fdc65",
+        "description": "This is a comment testing purpose",
+        "creationDate": "2019-12-15T01:08:02.365Z",
+        "updateDate": "2019-12-15T01:08:02.365Z",
+        "__v": 0
+    }
+]
+```
+
+- When requested in non existing thread post (400)
+```json
+{
+    "message": "Cast to ObjectId failed for value \"5df57db0dd9ab606184bc9011\" at path \"_id\" for model \"Post\""
+}
+```
