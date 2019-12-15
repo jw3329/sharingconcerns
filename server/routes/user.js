@@ -12,9 +12,9 @@ user.post('/signup', async (req, res) => {
         const saltRounds = 10;
         req.body.password = await bcrypt.hash(req.body.password, saltRounds);
         await new User(req.body).save();
-        res.send('User has successfully created');
+        res.json({ message: 'User has successfully created' });
     } catch (error) {
-        res.status(error.code).send(error.message);
+        res.status(error.code).json({ message: error.message });
     }
 });
 
@@ -26,9 +26,9 @@ user.post('/authorize', async (req, res) => {
         if (!await bcrypt.compare(req.body.password, user.password)) throw new CodeError(400, 'Password does not match');
         user.password = undefined;
         req.session.user = user;
-        res.send(user);
+        res.json({ message: user });
     } catch (error) {
-        res.status(error.code).send(error.message);
+        res.status(error.code).json({ message: error.message });
     }
 });
 
@@ -38,9 +38,9 @@ user.post('/follow', auth, async (req, res) => {
         const follower = await User.findOneAndUpdate({ username }, { $push: { followers: req.session.user._id } });
         if (!follower) throw new CodeError(400, 'The user does not exist');
         await User.findByIdAndUpdate(req.session.user._id, { $push: { followees: follower._id } });
-        res.send('Successfully followed user');
+        res.json({ message: 'Successfully followed user' });
     } catch (error) {
-        res.status(error.code).send(error.message);
+        res.status(error.code).json({ message: error.message });
     }
 });
 
@@ -50,25 +50,25 @@ user.delete('/follow', auth, async (req, res) => {
         const follower = await User.findOneAndUpdate({ username }, { $pull: { followers: req.session.user._id } });
         if (!follower) throw new CodeError(400, 'The user does not exist');
         await User.findByIdAndUpdate(req.session.user._id, { $pull: { followees: follower._id } });
-        res.send('Successfully removed followee');
+        res.json({ message: 'Successfully removed followee' });
     } catch (error) {
-        res.status(error.code).send(error.message);
+        res.status(error.code).json({ message: error.message });
     }
 });
 
-user.get('/:id', async (req, res, next) => {
+user.get('/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         res.json(user);
     } catch (error) {
-        next('No user found');
+        res.status(400).json({ message: 'No user found' });
     }
 });
 
 user.get('/signout', async (req, res, next) => {
     req.session.destroy(err => {
         if (err) next(err);
-        res.send('Successfully deleted');
+        res.json({ message: 'Successfully deleted' });
     });
 });
 
