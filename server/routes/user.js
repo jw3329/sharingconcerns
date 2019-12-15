@@ -12,7 +12,7 @@ user.post('/signup', async (req, res) => {
         const saltRounds = 10;
         req.body.password = await bcrypt.hash(req.body.password, saltRounds);
         await new User(req.body).save();
-        res.json({ message: 'User has successfully created' });
+        res.status(201).json({ message: 'User has successfully created' });
     } catch (error) {
         res.status(error.code).json({ message: error.message });
     }

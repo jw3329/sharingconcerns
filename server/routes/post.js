@@ -1,6 +1,6 @@
 const express = require('express');
 const post = express.Router();
-const { Post, User } = require('../models');
+const { Post, User, Comment } = require('../models');
 const { auth } = require('../middlewares');
 const { CodeError } = require('../error/code_error');
 
@@ -8,18 +8,23 @@ post.post('/', auth, async (req, res) => {
     try {
         const data = await new Post(req.body).save();
         await User.findByIdAndUpdate(req.session.user._id, { $push: { posts: data._id } });
-        res.json({ data, message: 'Successfully created' });
+        res.status(201).json({ data, message: 'Successfully created' });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
 });
 
-post.get('/:id', async (req, res) => {
+post.post('/:id/comment', auth, async (req, res) => {
     try {
-        const user = await Post.findById(req.params.id);
-        res.json(user);
+        const comment = await new Comment(req.body).save();
+        await Post.findByIdAndUpdate(req.params.id, { $push: { comments: comment._id } });
+        await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: comment._id } });
+        res.status(201).json({
+            comment,
+            message: 'Successfully created comment'
+        });
     } catch (error) {
-        res.status(400).json({ message: 'No user found' });
+        res.status(400).json({ message: error.message });
     }
 });
 
