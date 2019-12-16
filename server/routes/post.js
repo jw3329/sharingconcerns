@@ -14,6 +14,64 @@ post.post('/', auth, async (req, res) => {
     }
 });
 
+post.post('/:id/like', auth, async (req, res) => {
+    try {
+        const { likes } = await Post.findById(req.params.id, { likes: 1 });
+        // user already liked the post
+        let marked = likes.includes(req.session.user._id);
+        // if user already liked, unlike, if not like
+        await Post.findByIdAndUpdate(req.params.id, { [marked ? '$pull' : '$push']: { likes: req.session.user._id } });
+        await User.findByIdAndUpdate(req.params.id, { [marked ? '$pull' : '$push']: { 'likes.posts': req.params.id } });
+        res.json({ message: `Successfully ${marked ? 'un' : ''}marked like` });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+post.post('/:id/dislike', auth, async (req, res) => {
+    try {
+        const { dislikes } = await Post.findById(req.params.id, { dislikes: 1 });
+        // user already disliked the post
+        let marked = dislikes.includes(req.session.user._id);
+        // if user already disliked
+        await Post.findByIdAndUpdate(req.params.id, { [marked ? '$pull' : '$push']: { likes: req.session.user._id } });
+        await User.findByIdAndUpdate(req.params.id, { [marked ? '$pull' : '$push']: { 'dislikes.posts': req.params.id } });
+        res.json({ message: `Successfully ${marked ? 'un' : ''}marked dislike` });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+post.post('/:id/dislike', auth, async (req, res) => {
+    try {
+        const { dislikes } = await Post.findById(req.params.id, { dislikes: 1 });
+        let marked = !dislikes.includes(req.session.user._id);
+        await Post.findByIdAndUpdate(req.params.id, { [marked ? '$remove' : '$push']: { dislikes: req.session.user._id } });
+        res.json({ message: `Successfully ${marked ? '' : 'un'}marked dislike` });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+post.put('/:id/dislike', auth, async (req, res) => {
+    try {
+        await Post.findByIdAndUpdate(req.params.id, { $push: { dislikes: req.session.user._id } });
+        res.json({ message: 'Successfully marked dislike' });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+post.delete('/:id/dislike', auth, async (req, res) => {
+    try {
+        await Post.findByIdAndUpdate(req.params.id, { $remove: { dislikes: req.session.user._id } });
+        res.json({ message: 'Successfully unmarked dislike' });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
 post.post('/:id/comment', auth, async (req, res) => {
     try {
         const comment = await new Comment(req.body).save();
