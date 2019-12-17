@@ -248,3 +248,127 @@ This API gets all comments on the given thread post.
     "message": "Cast to ObjectId failed for value \"5df57db0dd9ab606184bc9011\" at path \"_id\" for model \"Post\""
 }
 ```
+
+### Like or dislike the post
+
+> Like the post
+
+`POST /<post_thread>/like`
+
+This API will like or unlike the post by user
+
+> use case
+
+> response
+- When successfully liked the post (200)
+```json
+{
+    "message": "Successfully marked like"
+}
+```
+
+- When successfully unliked the post (200)
+```json
+{
+    "message": "Successfully unmarked like"
+}
+```
+
+- When requested in non existing thread post (400)
+```json
+{
+    "message": "Cast to ObjectId failed for value \"5df57db0dd9ab606184bc9011\" at path \"_id\" for model \"Post\""
+}
+```
+
+> Dislike the post
+
+`POST /<post_thread>/dislike`
+
+This API will dislike or undislike the post by user
+
+> use case
+
+> response
+- When successfully disliked the post (200)
+```json
+{
+    "message": "Successfully marked dislike"
+}
+```
+
+- When successfully undisliked the post (200)
+```json
+{
+    "message": "Successfully unmarked dislike"
+}
+```
+
+- When requested in non existing thread post (400)
+```json
+{
+    "message": "Cast to ObjectId failed for value \"5df57db0dd9ab606184bc9011\" at path \"_id\" for model \"Post\""
+}
+```
+
+### Like or dislike the comment
+
+> Like the comment
+
+`POST /<post_thread>/like`
+
+This API will like or unlike the comment by user
+
+> use case
+
+> response
+- When successfully liked the comment (200)
+```json
+{
+    "message": "Successfully marked like"
+}
+```
+
+- When successfully unliked the comment (200)
+```json
+{
+    "message": "Successfully unmarked like"
+}
+```
+
+- When requested in non existing thread comment (400)
+```json
+{
+    "message": "Cast to ObjectId failed for value \"5df57db0dd9ab606184bc9011\" at path \"_id\" for model \"Post\""
+}
+```
+
+> Dislike the comment
+
+`POST /<post_thread>/dislike`
+
+This API will dislike or undislike the comment by user
+
+> use case
+
+> response
+- When successfully disliked the comment (200)
+```json
+{
+    "message": "Successfully marked dislike"
+}
+```
+
+- When successfully undisliked the comment (200)
+```json
+{
+    "message": "Successfully unmarked dislike"
+}
+```
+
+- When requested in non existing thread comment (400)
+```json
+{
+    "message": "Cast to ObjectId failed for value \"5df57db0dd9ab606184bc9011\" at path \"_id\" for model \"Post\""
+}
+```
