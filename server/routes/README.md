@@ -114,6 +114,10 @@ This API authorizes the user.
 
 This API follows the user.
 
+- If currently user is following followee, it will unfollow
+
+- If currently user is not following followee, it will follow
+
 > use case
 
 ```json
@@ -130,36 +134,14 @@ This API follows the user.
 }
 ```
 
-- If username to follow does not exist (400)
-```json
-{
-    "message": "The user does not exist"
-}
-```
-
-### Following the user
-
-`DELETE /follow` (Auth required)
-
-This API unfollows the user.
-
-> use case
-
-```json
-{
-	"username":"test_username2"
-}
-```
-
-> response
 - When successfully unfollowed (200)
 ```json
 {
-    "message": "Successfully removed followee"
+    "message": "Successfully unfollowed user"
 }
 ```
 
-- If username to unfollow does not exist (400)
+- If username to follow does not exist (400)
 ```json
 {
     "message": "The user does not exist"
