@@ -36,14 +36,8 @@
         maxlength: 25
     },
     posts: [Mongoose.Schema.Types.ObjectId],
-    likes: new Mongoose.Schema({
-        posts: [Mongoose.Schema.Types.ObjectId],
-        comments: [Mongoose.Schema.Types.ObjectId]
-    }),
-    dislikes: new Mongoose.Schema({
-        posts: [Mongoose.Schema.Types.ObjectId],
-        comments: [Mongoose.Schema.Types.ObjectId]
-    }),
+    likes: likeSchema,
+    dislikes: likeSchema,
     views: [Mongoose.Schema.Types.ObjectId],
     replied: [Mongoose.Schema.Types.ObjectId],
     comments: [Mongoose.Schema.Types.ObjectId],
