@@ -372,3 +372,146 @@ This API will dislike or undislike the comment by user
     "message": "Cast to ObjectId failed for value \"5df57db0dd9ab606184bc9011\" at path \"_id\" for model \"Post\""
 }
 ```
+
+## Comment APIs `/comment`
+
+### Reply on the comment
+
+`POST /<comment_id>/reply` (Auth required)
+
+This API replies on the given comment.
+
+> use case
+
+```json
+{
+	"description": "This is testing comment reply"
+}
+```
+
+> response
+- When successfully replied the comment (201)
+```json
+{
+    "message": "Successfully created reply",
+    "reply": {
+        "likes": [],
+        "dislikes": [],
+        "replies": [],
+        "_id": "5dfababbefe427231abb2fbf",
+        "description": "This is testing comment reply",
+        "creationDate": "2019-12-18T23:48:11.698Z",
+        "updateDate": "2019-12-18T23:48:11.698Z",
+        "__v": 0
+    }
+}
+```
+
+
+> Like the comment
+
+`POST /<comment_id>/like`
+
+This API will like or unlike the post by user
+
+> use case
+
+> response
+- When successfully liked the post (200)
+```json
+{
+    "message": "Successfully marked like"
+}
+```
+
+- When successfully unliked the post (200)
+```json
+{
+    "message": "Successfully unmarked like"
+}
+```
+
+- When requested in non existing thread post (400)
+```json
+{
+    "message": "Cast to ObjectId failed for value \"5df57db0dd9ab606184bc9011\" at path \"_id\" for model \"Post\""
+}
+```
+
+> Dislike the post
+
+`POST /<post_thread>/dislike`
+
+This API will dislike or undislike the post by user
+
+> use case
+
+> response
+- When successfully disliked the post (200)
+```json
+{
+    "message": "Successfully marked dislike"
+}
+```
+
+- When successfully undisliked the post (200)
+```json
+{
+    "message": "Successfully unmarked dislike"
+}
+```
+
+- When requested in non existing thread post (400)
+```json
+{
+    "message": "Cast to ObjectId failed for value \"5df57db0dd9ab606184bc9011\" at path \"_id\" for model \"Post\""
+}
+```
+
+### Like or dislike the comment
+
+> Like the comment
+
+`POST /<comment_id>/like`
+
+This API will like or unlike the comment by user
+
+> use case
+
+> response
+- When successfully liked the comment (200)
+```json
+{
+    "message": "Successfully marked comment like"
+}
+```
+
+- When successfully unliked the comment (200)
+```json
+{
+    "message": "Successfully unmarked comment like"
+}
+```
+
+> Dislike the comment
+
+`POST /<comment_id>/dislike`
+
+This API will dislike or undislike the comment by user
+
+> use case
+
+> response
+- When successfully disliked the comment (200)
+```json
+{
+    "message": "Successfully marked comment dislike"
+}
+```
+
+- When successfully undisliked the comment (200)
+```json
+{
+    "message": "Successfully unmarked comment dislike"
+}
+```
