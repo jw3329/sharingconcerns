@@ -2,7 +2,6 @@ const express = require('express');
 const post = express.Router();
 const { Post, User, Comment } = require('../models');
 const { auth } = require('../middlewares');
-const { CodeError } = require('../error/code_error');
 
 post.post('/', auth, async (req, res) => {
     try {
@@ -22,7 +21,7 @@ post.post('/:id/like', auth, async (req, res) => {
         // if user already liked, unlike, if not like
         await Post.findByIdAndUpdate(req.params.id, { [marked ? '$pull' : '$push']: { likes: req.session.user._id } });
         await User.findByIdAndUpdate(req.session.user._id, { [marked ? '$pull' : '$push']: { 'likes.posts': req.params.id } });
-        res.json({ message: `Successfully ${marked ? 'un' : ''}marked like` });
+        res.json({ message: `Successfully ${marked ? 'un' : ''}marked post like` });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -36,7 +35,7 @@ post.post('/:id/dislike', auth, async (req, res) => {
         // if user already disliked
         await Post.findByIdAndUpdate(req.params.id, { [marked ? '$pull' : '$push']: { dislikes: req.session.user._id } });
         await User.findByIdAndUpdate(req.session.user._id, { [marked ? '$pull' : '$push']: { 'dislikes.posts': req.params.id } });
-        res.json({ message: `Successfully ${marked ? 'un' : ''}marked dislike` });
+        res.json({ message: `Successfully ${marked ? 'un' : ''}marked post dislike` });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
