@@ -6,6 +6,4 @@ ADD package*.json ./
 
 RUN npm install
 
-RUN ls
-
 ADD . .
