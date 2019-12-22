@@ -4,9 +4,12 @@ const session = require('express-session');
 
 const bodyParser = require('body-parser');
 
+const cors = require('cors');
+
 const PORT = 8000;
 
 const app = express();
+
 
 const api = require('./routes/api');
 
@@ -17,7 +20,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
-
+app.use(cors());
 app.use('/api', api);
 
 app.get('/', (req, res) => {

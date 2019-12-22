@@ -10,6 +10,7 @@ user.post('/signup', async (req, res) => {
         if (user) throw new Error('Given user exists');
         const saltRounds = 10;
         req.body.password = await bcrypt.hash(req.body.password, saltRounds);
+        console.log('here');
         await new User(req.body).save();
         res.status(201).json({ message: 'User has successfully created' });
     } catch (error) {
