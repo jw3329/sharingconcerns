@@ -11,25 +11,25 @@ services:
       - "27017-27019:27017-27019"
 
   server:
-    build: server
+    image: node
     container_name: "sharingconcerns-server-container"
     working_dir: /usr/app/server
     volumes:
       - ./server:/usr/app/server
-      - /usr/app/server/node_modules
+      # - /usr/app/server/node_modules
     command: npm start
     ports:
       - "8000:8000"
     depends_on:
       - database
   client:
-    build: client
+    image: node
     container_name: "sharingconcerns-client-container"
     working_dir: /usr/app/client
     command: npm start
     volumes:
       - ./client:/usr/app/client
-      - /usr/app/client/node_modules
+      # - /usr/app/client/node_modules
     ports:
       - "3000:3000"
     depends_on:
