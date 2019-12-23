@@ -6,11 +6,16 @@ const { auth } = require('../middlewares/index');
 
 user.post('/signup', async (req, res) => {
     try {
+        // const error = validationResult(req);
+        // console.log(error);
+        // if (!error.isEmpty()) return res.status(422).json({ errors: errors.array() });
+        console.log(req.body)
         const user = await User.findOne({ $or: [{ email: req.body.email }, { username: req.body.username }] });
+        console.log(user)
         if (user) throw new Error('Given user exists');
         const saltRounds = 10;
+        console.log(user);
         req.body.password = await bcrypt.hash(req.body.password, saltRounds);
-        console.log('here');
         await new User(req.body).save();
         res.status(201).json({ message: 'User has successfully created' });
     } catch (error) {
