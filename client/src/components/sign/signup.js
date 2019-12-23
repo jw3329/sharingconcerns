@@ -26,10 +26,10 @@ const Signup = () => {
             });
         } catch (error) {
             console.log(error);
-            setValidation({
-                status: false,
-                message: error.data.message
-            });
+            // setValidation({
+            //     status: false,
+            //     message: error.data.message
+            // });
         }
     }
 

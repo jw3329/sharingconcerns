@@ -4,7 +4,6 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Navbar from './components/navbar';
 import { Container } from 'react-bootstrap';
 import { Signin, Signup } from './components/sign';
-
 import Home from './components/home';
 function App() {
   return (
