@@ -1,6 +1,7 @@
 version: "3"
 services:
   database:
+    network_mode: host
     image: "mongo"
     container_name: "sharingconcerns-mongo-container"
     environment:
@@ -11,6 +12,7 @@ services:
       - "27017-27019:27017-27019"
 
   server:
+    network_mode: host
     image: node
     container_name: "sharingconcerns-server-container"
     working_dir: /usr/app/server
@@ -23,6 +25,7 @@ services:
     depends_on:
       - database
   client:
+    network_mode: host
     image: node
     container_name: "sharingconcerns-client-container"
     working_dir: /usr/app/client
