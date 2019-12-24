@@ -27,7 +27,7 @@ user.post('/authorize', async (req, res) => {
         if (!await bcrypt.compare(req.body.password, user.password)) throw new Error('Password does not match');
         user.password = undefined;
         req.session.user = user;
-        res.json({ message: user });
+        res.json({ user });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
