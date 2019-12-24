@@ -14,10 +14,6 @@ const Signup = () => {
         // removes message first
         setValidation({ status: null, message: '' });
         // handle if password and confirm password does not match
-
-        if (form.password !== form.confirmPassword) {
-            return setValidation({ status: false, message: 'Password and confirm password do not match' });
-        }
         try {
             const response = await axios.post('/user/signup', form);
             setValidation({
@@ -25,11 +21,10 @@ const Signup = () => {
                 message: response.data.message
             });
         } catch (error) {
-            console.log(error);
-            // setValidation({
-            //     status: false,
-            //     message: error.data.message
-            // });
+            setValidation({
+                status: false,
+                message: error.response.data.message
+            });
         }
     }
 
@@ -72,14 +67,14 @@ const Signup = () => {
                         <Form.Control type="text" placeholder="Lastname" />
                     </Form.Group>
                     <Button variant="primary" type="submit">Submit</Button>
+                    {
+                        validation.status !== null && (
+                            <Alert className="mt-3" variant={validation.status ? 'success' : 'danger'}>
+                                {validation.message}
+                            </Alert>
+                        )
+                    }
                 </Col>
-                {
-                    validation.status !== null && (
-                        <Alert className="mt-3" variant={validation.status ? 'success' : 'danger'}>
-                            {validation.message}
-                        </Alert>
-                    )
-                }
             </Row>
         </Form>
     );
