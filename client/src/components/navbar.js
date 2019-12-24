@@ -2,16 +2,22 @@ import React, { Fragment, useContext } from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import AuthContext from '../contexts/auth';
+import axios from 'axios';
 
 const NavbarLayout = () => {
 
-    const { auth } = useContext(AuthContext);
+    const { auth, setAuth } = useContext(AuthContext);
+
+    const handleSignout = async e => {
+        const { status } = (await axios.get('/user/signout')).data;
+        status && setAuth(null);
+    }
 
     return (
         <Navbar bg="dark" variant="dark">
             <Navbar.Brand as={NavLink} to="/">SharingConcerns</Navbar.Brand>
             <Nav className="mr-auto">
-                <Nav.Link as={NavLink} to="/Features">Features</Nav.Link>
+                <Nav.Link as={NavLink} to="/post">Post</Nav.Link>
                 <Nav.Link as={NavLink} to="/Pricing">Pricing</Nav.Link>
             </Nav>
             <Nav>
@@ -19,7 +25,7 @@ const NavbarLayout = () => {
                     auth ?
                         <Fragment>
                             <Nav.Link disabled>Hello, {auth.username}</Nav.Link>
-                            <Nav.Link as={NavLink} to="/signout">Sign out</Nav.Link>
+                            <Nav.Link onClick={handleSignout}>Sign out</Nav.Link>
                         </Fragment>
                         :
                         <Fragment>

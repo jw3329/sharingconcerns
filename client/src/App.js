@@ -1,12 +1,11 @@
 import React, { useEffect, useContext, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import Navbar from './components/navbar';
 import { Container } from 'react-bootstrap';
-import { Signin, Signup } from './components/sign';
-import Home from './components/home';
 import axios from 'axios';
 import AuthContext from './contexts/auth';
+import Routes from './routes';
 
 function App() {
 
@@ -26,11 +25,11 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Container className="mt-3">
-          <Switch>
-            <Route exact path="/"><Home /></Route>
+          {/* <Route exact path="/"><Home /></Route>
             <Route exact path="/signup"><Signup /></Route>
             <Route exact path="/signin"><Signin /></Route>
-          </Switch>
+            <Route exact path="/post"><Post /></Route> */}
+          <Routes />
         </Container>
       </BrowserRouter>
     </div>

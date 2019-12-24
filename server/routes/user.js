@@ -51,9 +51,11 @@ user.post('/follow', auth, async (req, res) => {
     }
 });
 
-user.get('/', (req, res) => {
-    if (req.session.user) res.json({ status: true, user: req.session.user });
-    else res.json({ status: false, message: 'No user found' });
+user.get('/signout', auth, (req, res, next) => {
+    req.session.destroy(err => {
+        if (err) res.json({ status: false, message: err });
+        res.json({ status: true, message: 'Successfully deleted' });
+    });
 });
 
 user.get('/:id', async (req, res) => {
@@ -65,11 +67,10 @@ user.get('/:id', async (req, res) => {
     }
 });
 
-user.get('/signout', async (req, res, next) => {
-    req.session.destroy(err => {
-        if (err) next(err);
-        res.json({ message: 'Successfully deleted' });
-    });
+
+user.get('/', (req, res) => {
+    if (req.session.user) res.json({ status: true, user: req.session.user });
+    else res.json({ status: false, message: 'No user found' });
 });
 
 module.exports = user;
