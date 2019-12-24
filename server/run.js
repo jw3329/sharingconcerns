@@ -10,7 +10,6 @@ const PORT = 8000;
 
 const app = express();
 
-
 const api = require('./routes/api');
 
 app.use(bodyParser.json());
@@ -20,7 +19,7 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
-app.use(cors());
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use('/api', api);
 
 app.get('/', (req, res) => {

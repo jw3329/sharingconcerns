@@ -27,9 +27,9 @@ user.post('/authorize', async (req, res) => {
         if (!await bcrypt.compare(req.body.password, user.password)) throw new Error('Password does not match');
         user.password = undefined;
         req.session.user = user;
-        res.json({ user });
+        res.json({ status: true, user });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.json({ status: false, message: error.message });
     }
 });
 
@@ -51,12 +51,17 @@ user.post('/follow', auth, async (req, res) => {
     }
 });
 
+user.get('/', (req, res) => {
+    if (req.session.user) res.json({ status: true, user: req.session.user });
+    else res.json({ status: false, message: 'No user found' });
+});
+
 user.get('/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
-        res.json(user);
+        res.json({ status: true, user });
     } catch (error) {
-        res.status(400).json({ message: 'No user found' });
+        res.json({ status: false, message: 'No user found' });
     }
 });
 
