@@ -1,8 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
-import AuthContext from '../../contexts/auth';
 import axios from 'axios';
 import { withRouter } from 'react-router';
+import AuthContext from '../../contexts/auth';
 
 const Signin = ({ history }) => {
 
@@ -20,11 +20,11 @@ const Signin = ({ history }) => {
         e.preventDefault();
         // handle if password and confirm password does not match
         try {
-            const user = (await axios.post('/user/authorize', form)).data;
+            const { status, user, message } = (await axios.post('/user/authorize', form)).data;
+            if (!status) setMessage(message);
             setAuth(user);
-            return history.replace('/');
         } catch (error) {
-            setMessage(error.response.data.message);
+            console.log(error);
         }
     }
 
