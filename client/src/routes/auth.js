@@ -1,16 +1,13 @@
-import React, { Fragment, useContext } from 'react';
+import React from 'react';
 import Post from '../components/post';
-import { Route } from 'react-router-dom';
-import AuthContext from '../contexts/auth';
+
 
 const AuthRoutes = () => {
 
-    const { auth } = useContext(AuthContext);
+    console.log('here')
 
-    return auth && (
-        <Fragment>
-            <Route exact path="/post"><Post /></Route>
-        </Fragment>
+    return (
+        <Route exact path="/post"><Post /></Route>
     );
 }
 

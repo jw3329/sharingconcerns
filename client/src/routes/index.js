@@ -1,19 +1,29 @@
-import React, { Fragment } from 'react';
-import NormalRoutes from './normal';
-import AuthRoutes from './auth';
+import React, { Fragment, useContext } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Error from '../components/error';
+import { Signup, Signin } from '../components/sign';
+import Home from '../components/home';
+import Post from '../components/post';
+import AuthContext from '../contexts/auth';
+
 
 
 const RoutesIndex = () => {
+
+    const { auth } = useContext(AuthContext);
+
     return (
-        <Fragment>
-            <Switch>
-                <NormalRoutes />
-                <AuthRoutes />
-                <Route><Error /></Route>
-            </Switch>
-        </Fragment>
+        <Switch>
+            <Route exact path="/"><Home /></Route>
+            <Route exact path="/signup"><Signup /></Route>
+            <Route exact path="/signin"><Signin /></Route>
+            {auth && (
+                <Fragment>
+                    <Route exact path="/post"><Post /></Route>
+                </Fragment>
+            )}
+            <Route><Error /></Route>
+        </Switch>
     );
 }
 

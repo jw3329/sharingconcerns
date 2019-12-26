@@ -1,15 +1,18 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import Home from '../components/home';
 import { Signup, Signin } from '../components/sign';
-import { Route } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
+import Error from '../components/error';
+
 
 const NormalRoutes = () => {
     return (
-        <Fragment>
+        <Switch>
             <Route exact path="/"><Home /></Route>
             <Route exact path="/signup"><Signup /></Route>
             <Route exact path="/signin"><Signin /></Route>
-        </Fragment>
+            <Route><Error /></Route>
+        </Switch>
     );
 }
 
