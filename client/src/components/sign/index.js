@@ -3,5 +3,5 @@ import Signup from './signup';
 
 export {
     Signin,
-    Signup
+    Signup,
 };
