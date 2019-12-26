@@ -13,6 +13,16 @@ post.post('/', auth, async (req, res) => {
     }
 });
 
+post.get('/user/:username', auth, async (req, res) => {
+    try {
+        const { posts: postsId } = await User.find({ username: req.params.username }, 'posts');
+        const { posts } = await Post.find().where('_id').in(postsId).exec();
+        res.json({ status: true, posts: [...posts] });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 post.post('/:id/like', auth, async (req, res) => {
     try {
         const { likes } = await Post.findById(req.params.id, { likes: 1 });
