@@ -15,9 +15,9 @@ post.post('/', auth, async (req, res) => {
 
 post.get('/user/:username', auth, async (req, res) => {
     try {
-        const { posts: postsId } = await User.find({ username: req.params.username }, 'posts');
-        const { posts } = await Post.find().where('_id').in(postsId).exec();
-        res.json({ status: true, posts: [...posts] });
+        const { posts: postsId } = await User.findOne({ username: req.params.username }, 'posts');
+        const posts = await Post.find({ _id: { $in: postsId } }, null, { sort: { updateDate: -1 } });
+        res.json({ status: true, posts });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
