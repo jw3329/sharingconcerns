@@ -4,6 +4,7 @@ import Error from '../components/error';
 import { Signup, Signin } from '../components/sign';
 import Home from '../components/home';
 import Post from '../components/post';
+import PostThread from '../components/post_thread';
 import AuthContext from '../contexts/auth';
 
 
@@ -20,6 +21,7 @@ const RoutesIndex = () => {
             {auth && (
                 <Fragment>
                     <Route exact path="/post"><Post /></Route>
+                    <Route exact path="/post/:id" component={PostThread} />
                 </Fragment>
             )}
             <Route><Error /></Route>
