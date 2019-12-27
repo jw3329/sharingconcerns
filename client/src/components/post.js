@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useContext, useState } from 'react';
 import { Row, Col, Button, Card, Form } from 'react-bootstrap';
 import axios from 'axios';
 import AuthContext from '../contexts/auth';
+import { Link } from 'react-router-dom';
 
 
 const Post = () => {
@@ -13,17 +14,15 @@ const Post = () => {
     useEffect(() => {
         axios.get(`/post/user/${auth.username}`)
             .then(res => res.data)
-            .then(({ posts }) => console.log(posts) && setPosts(posts.map((post, key) => generatePostCard(post, key))))
+            .then(({ status, posts }) => status && setPosts([...posts]))
             .catch(err => console.log(err));
-    }, []);
+    }, [auth.username]);
 
     const generatePostCard = (post, key) => (
         <Card style={{ width: '20rem' }} key={key}>
             <Card.Body>
-                <Card.Title>{post.title}</Card.Title>
-                <Card.Text>
-                    {post.description}
-                </Card.Text>
+                <Card.Title> <Link to={`/post/${post._id}`}>{post.title}</Link></Card.Title>
+                <div className="d-flex justify-content-end" style={{ fontSize: "smaller" }}>{`${new Date(post.updateDate).toLocaleDateString()} ${new Date(post.updateDate).toLocaleTimeString()}`}</div>
             </Card.Body>
         </Card>
     )
@@ -44,13 +43,13 @@ const Post = () => {
                 <Col sm={6}>
                     <h1>My Post</h1>
                     <div className="posts">
-                        {posts}
+                        {posts.map((post, key) => generatePostCard(post, key))}
                     </div>
                 </Col>
                 <Col xs={6}>
                     <div className="create-post">
                         <Form onChange={handleChange} onSubmit={handleSubmit}>
-                            <Form.Group controlId="exampleForm.ControlTextarea1">
+                            <Form.Group>
                                 <Form.Control id="title" placeholder="title" />
                                 <Form.Control className="mt-2" id="description" as="textarea" rows="10" placeholder="description" />
                             </Form.Group>
