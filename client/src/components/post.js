@@ -12,10 +12,12 @@ const Post = () => {
     const [create, setCreate] = useState({});
 
     useEffect(() => {
+        let mounted = false;
         axios.get(`/post/user/${auth.username}`)
             .then(res => res.data)
-            .then(({ status, posts }) => status && setPosts([...posts]))
+            .then(({ status, posts }) => !mounted && status && setPosts([...posts]))
             .catch(err => console.log(err));
+        return () => mounted = true;
     }, [auth.username]);
 
     const generatePostCard = (post, key) => (
