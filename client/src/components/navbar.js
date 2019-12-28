@@ -17,8 +17,12 @@ const NavbarLayout = () => {
         <Navbar bg="dark" variant="dark">
             <Navbar.Brand as={NavLink} to="/">SharingConcerns</Navbar.Brand>
             <Nav className="mr-auto">
-                <Nav.Link as={NavLink} to="/post">Post</Nav.Link>
-                <Nav.Link as={NavLink} to="/Pricing">Pricing</Nav.Link>
+                {auth && (
+                    <Fragment>
+                        <Nav.Link as={NavLink} to="/post">Post</Nav.Link>
+                        <Nav.Link as={NavLink} to="/Pricing">Pricing</Nav.Link>
+                    </Fragment>
+                )}
             </Nav>
             <Nav>
                 {

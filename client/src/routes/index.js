@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Error from '../components/error';
 import { Signup, Signin } from '../components/sign';
@@ -12,19 +12,32 @@ import AuthContext from '../contexts/auth';
 const RoutesIndex = () => {
 
     const { auth } = useContext(AuthContext);
+    const [routes, setRoutes] = useState({
+        '/': Home,
+        '/signup': Signup,
+        '/signin': Signin
+    });
+
+    useEffect(() => {
+        if (auth) {
+            const authRoutes = {
+                '/post': Post,
+                '/post/:id': PostThread
+            }
+            setRoutes(routes => ({ ...routes, ...authRoutes }));
+        }
+    }, [auth]);
 
     return (
         <Switch>
-            <Route exact path="/"><Home /></Route>
-            <Route exact path="/signup"><Signup /></Route>
-            <Route exact path="/signin"><Signin /></Route>
-            {auth && (
-                <Fragment>
-                    <Route exact path="/post"><Post /></Route>
-                    <Route exact path="/post/:id" component={PostThread} />
-                </Fragment>
-            )}
-            <Route><Error /></Route>
+            {(() => {
+                const res = [];
+                for (const path in routes) {
+                    res.push(<Route exact path={path} key={path} component={routes[path]}></Route>);
+                }
+                res.push(<Route key={'error'}><Error /></Route>);
+                return res;
+            })()}
         </Switch>
     );
 }
