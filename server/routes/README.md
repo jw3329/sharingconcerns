@@ -185,6 +185,31 @@ This API posts the post of user.
 }
 ```
 
+`GET /:postThread` (Auth required)
+
+This API gets the post of postThread.
+
+> response
+- When successfully grabbed the post (200)
+```json
+{
+    "post": {
+        "views": 0,
+        "likes": [],
+        "dislikes": [],
+        "comments": [],
+        "_id": "5df57db0dd9ab606184bc901",
+        "title": "haha",
+        "description": "123123123",
+        "creationDate": "2019-12-15T00:26:24.007Z",
+        "updateDate": "2019-12-15T00:26:24.007Z",
+        "__v": 0
+    },
+    "status": true
+}
+```
+
+
 ### Comment on the post
 
 `POST /<post_thread>/comment` (Auth required)

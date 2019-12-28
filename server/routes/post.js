@@ -13,6 +13,16 @@ post.post('/', auth, async (req, res) => {
     }
 });
 
+post.get('/:postThread', auth, async (req, res) => {
+    try {
+        const post = await Post.findOne({ _id: req.params.postThread });
+        if (!post) res.json({ status: false, message: 'No post thread found' });
+        res.json({ status: true, post });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 post.get('/user/:username', auth, async (req, res) => {
     try {
         const { posts: postsId } = await User.findOne({ username: req.params.username }, 'posts');
