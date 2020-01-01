@@ -1,12 +1,14 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useContext } from 'react';
 import axios from 'axios';
 import Utils from '../utils';
+import AuthContext from '../contexts/auth';
 
 const Comment = ({ id }) => {
 
     const [comments, setComments] = useState([]);
     const [inputComment, setInputComment] = useState('');
     const [message, setMessage] = useState('');
+    const { auth } = useContext(AuthContext);
 
     useEffect(() => {
         axios.get(`/post/${id}/comments`)
@@ -14,6 +16,34 @@ const Comment = ({ id }) => {
             .then(comments => setComments(comments))
             .catch(err => console.log(err));
     }, [id]);
+
+    const handleLike = async comment => {
+        try {
+            const { status, marked, message } = (await axios.post(`/comment/${comment._id}/like`)).data;
+            if (!status) throw new Error(message);
+            // if it was already marked, then we have to remove the mark
+            comment.likes = marked ? comment.likes.filter(like => like !== auth._id) : [auth._id, ...comment.likes];
+            setComments([...comments]);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleDislike = async comment => {
+        try {
+            const { status, marked, message } = (await axios.post(`/comment/${comment._id}/dislike`)).data;
+            if (!status) throw new Error(message);
+            // same as above way
+            comment.dislikes = marked ? comment.dislikes.filter(dislike => dislike !== auth._id) : [auth._id, ...comment.dislikes];
+            setComments([...comments]);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleShowReply = () => {
+
+    }
 
     const makeCard = (comment, key) => (
         <div className="card m-2" key={key}>
@@ -25,6 +55,13 @@ const Comment = ({ id }) => {
                     <div className="col-sm-3">
                         {Utils.toLocaleTimestamp(comment.updateDate)}
                     </div>
+                </div>
+                <div className="row">
+                    <button className="btn btn-success m-2" onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
+                    <button className="btn btn-danger m-2" onClick={() => handleDislike(comment)}>dislike({comment.dislikes.length})</button>
+                </div>
+                <div className="row">
+                    <button className="btn btn-primary m-2" onClick={() => handleShowReply(comment)}>Replies({comment.replies.length})</button>
                 </div>
             </div>
         </div>
