@@ -6,6 +6,7 @@ const Comment = ({ id }) => {
 
     const [comments, setComments] = useState([]);
     const [inputComment, setInputComment] = useState('');
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         axios.get(`/post/${id}/comments`)
@@ -31,11 +32,17 @@ const Comment = ({ id }) => {
 
     const handleSubmit = async e => {
         e.preventDefault();
+        // make error message empty
+        setMessage('');
         try {
             const res = (await axios.post(`/post/${id}/comment`, { description: inputComment })).data;
+            if (!res.status) return setMessage(res.message);
+            // make the newest comment on the top
             setComments([res.comment, ...comments]);
+            // make it empty as well
+            setInputComment('');
         } catch (error) {
-            console.log(error);
+            console.log(error.response);
         }
     }
 
@@ -52,6 +59,11 @@ const Comment = ({ id }) => {
                     <label htmlFor="inputComment">Input comment</label>
                     <textarea className="form-control" id="inputComment" rows="3" />
                 </div>
+                {message && (
+                    <div className="alert alert-danger" role="alert">
+                        {message}
+                    </div>
+                )}
                 <button className="btn btn-primary">Submit</button>
             </form>
             {comments.map((comment, key) => makeCard(comment, key))}
