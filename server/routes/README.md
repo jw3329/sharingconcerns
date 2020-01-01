@@ -340,7 +340,7 @@ This API will dislike or undislike the post by user
 
 > Like the comment
 
-`POST /<post_thread>/like`
+`POST /<comment_thread>/like`
 
 This API will like or unlike the comment by user
 
