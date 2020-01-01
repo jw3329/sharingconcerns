@@ -64,22 +64,23 @@ post.post('/:id/dislike', auth, async (req, res) => {
 
 post.post('/:id/comment', auth, async (req, res) => {
     try {
+        if (!req.body.description) throw new Error('Comment description required.')
         const comment = await new Comment(req.body).save();
         await Post.findByIdAndUpdate(req.params.id, { $push: { comments: comment._id } });
         await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: comment._id } });
         res.status(201).json({
-            comment,
-            message: 'Successfully created comment'
+            status: true,
+            comment
         });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.json({ status: false, message: error.message });
     }
 });
 
 post.get('/:id/comments', async (req, res) => {
     try {
         const postComments = await Post.findById(req.params.id, { _id: 0, comments: 1 });
-        const comments = await Comment.find({ _id: { $in: postComments.comments } });
+        const comments = await Comment.find({ _id: { $in: postComments.comments } }).sort({ updateDate: -1 });
         res.json(comments);
     } catch (error) {
         res.status(400).json({ message: error.message });
