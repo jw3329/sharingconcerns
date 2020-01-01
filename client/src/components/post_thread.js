@@ -1,5 +1,6 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import axios from 'axios';
+import Comment from './comment';
 
 
 const PostThread = props => {
@@ -16,6 +17,8 @@ const PostThread = props => {
             .catch(err => console.log(err));
     }, [id]);
 
+    document.title = post && post.title;
+
     return loaded && (
         <Fragment>
             <div className="card">
@@ -29,7 +32,7 @@ const PostThread = props => {
                 <button className="justify-content-start btn btn-success m-3">Like</button>
                 <button className="justify-content-end btn btn-danger m-3">Dislike</button>
             </div>
-            <h1>Comments</h1>
+            <Comment id={id} />
         </Fragment>
     );
 }
