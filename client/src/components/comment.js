@@ -71,6 +71,7 @@ const Comment = ({ id }) => {
         e.preventDefault();
         // make error message empty
         setMessage('');
+        document.getElementById('inputComment').value = '';
         try {
             const res = (await axios.post(`/post/${id}/comment`, { description: inputComment })).data;
             if (!res.status) return setMessage(res.message);
