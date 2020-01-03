@@ -53,7 +53,7 @@ const Comment = ({ id }) => {
                         {comment.description}
                     </div>
                     <div className="col-sm-3">
-                        {Utils.toLocaleTimestamp(comment.updateDate)}
+                        {Utils.toLocaleTimestamp()}
                     </div>
                 </div>
                 <div className="row">
