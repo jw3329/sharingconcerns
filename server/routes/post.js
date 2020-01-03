@@ -41,7 +41,7 @@ post.post('/:id/like', auth, async (req, res) => {
         // if user already liked, unlike, if not like
         await Post.findByIdAndUpdate(req.params.id, { [marked ? '$pull' : '$push']: { likes: req.session.user._id } });
         await User.findByIdAndUpdate(req.session.user._id, { [marked ? '$pull' : '$push']: { 'likes.posts': req.params.id } });
-        res.json({ message: `Successfully ${marked ? 'un' : ''}marked post like` });
+        res.json({ status: true, marked });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -55,7 +55,7 @@ post.post('/:id/dislike', auth, async (req, res) => {
         // if user already disliked
         await Post.findByIdAndUpdate(req.params.id, { [marked ? '$pull' : '$push']: { dislikes: req.session.user._id } });
         await User.findByIdAndUpdate(req.session.user._id, { [marked ? '$pull' : '$push']: { 'dislikes.posts': req.params.id } });
-        res.json({ message: `Successfully ${marked ? 'un' : ''}marked post dislike` });
+        res.json({ status: true, marked });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
