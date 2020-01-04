@@ -57,8 +57,8 @@ const Comment = ({ id }) => {
                     </div>
                 </div>
                 <div className="row">
-                    <button className="btn btn-success m-2" onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
-                    <button className="btn btn-danger m-2" onClick={() => handleDislike(comment)}>dislike({comment.dislikes.length})</button>
+                    <button className={`btn btn${comment.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
+                    <button className={`btn btn${comment.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(comment)}>Dislike({comment.dislikes.length})</button>
                 </div>
                 <div className="row">
                     <button className="btn btn-primary m-2" onClick={() => handleShowReply(comment)}>Replies({comment.replies.length})</button>

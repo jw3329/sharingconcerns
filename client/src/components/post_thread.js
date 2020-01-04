@@ -21,7 +21,6 @@ const PostThread = props => {
             .then(({ status, post, message }) => {
                 if (!status) console.log(message);
                 setPost(post);
-                console.log(post)
                 // condition if liked or not
                 setLike(post.likes.includes(auth._id));
                 setDislike(post.dislikes.includes(auth._id));
