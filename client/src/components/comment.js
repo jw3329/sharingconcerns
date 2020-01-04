@@ -2,6 +2,7 @@ import React, { useState, useEffect, Fragment, useContext } from 'react';
 import axios from 'axios';
 import Utils from '../utils';
 import AuthContext from '../contexts/auth';
+import { Accordion, Button } from 'react-bootstrap';
 
 const Comment = ({ id }) => {
 
@@ -9,6 +10,8 @@ const Comment = ({ id }) => {
     const [inputComment, setInputComment] = useState('');
     const [message, setMessage] = useState('');
     const { auth } = useContext(AuthContext);
+    const [idMapReply, setIdMapReply] = useState({});
+    const [idMapReplyMessage, setIdMapReplyMessage] = useState({});
 
     useEffect(() => {
         axios.get(`/post/${id}/comments`)
@@ -45,26 +48,68 @@ const Comment = ({ id }) => {
 
     }
 
+    const handleReplyChange = (e, comment) => {
+        setIdMapReply({ ...idMapReply, [comment._id]: e.target.value });
+    }
+
+    const handleReplySubmit = async (e, comment) => {
+        e.preventDefault();
+        e.persist();
+        setIdMapReplyMessage({ ...idMapReplyMessage, [comment._id]: '' });
+        try {
+            const { status, message } = (await axios.post(`/comment/${comment._id}/reply`, { description: idMapReply[comment._id] })).data;
+            if (!status) throw new Error(message);
+            // add to the frontend right away
+            console.log('done');
+        } catch (error) {
+            setIdMapReplyMessage({ ...idMapReplyMessage, [comment._id]: error.message });
+            // console.log(error.message);
+        }
+    }
+
     const makeCard = (comment, key) => (
-        <div className="card m-2" key={key}>
-            <div className="card-body">
-                <div className="row">
-                    <div className="col-sm-9">
-                        {comment.description}
+        <Accordion key={key}>
+            <div className="card m-2">
+                <div className="card-body">
+                    <div className="row m-3">
+                        <div className="col-sm-9">
+                            {comment.description}
+                        </div>
+                        <div className="ml-auto">
+                            {Utils.toLocaleTimestamp(comment.updateDate)}
+                        </div>
                     </div>
-                    <div className="col-sm-3">
-                        {Utils.toLocaleTimestamp()}
+                    <div className="row m-3">
+                        <Accordion.Toggle as={Button} eventKey="0" variant="outline-primary">Reply on the comment</Accordion.Toggle>
+                        <div className="ml-auto">
+                            <button className={`btn btn${comment.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
+                            <button className={`btn btn${comment.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(comment)}>Dislike({comment.dislikes.length})</button>
+                        </div>
                     </div>
-                </div>
-                <div className="row">
-                    <button className={`btn btn${comment.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
-                    <button className={`btn btn${comment.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(comment)}>Dislike({comment.dislikes.length})</button>
-                </div>
-                <div className="row">
-                    <button className="btn btn-primary m-2" onClick={() => handleShowReply(comment)}>Replies({comment.replies.length})</button>
+                    <div className="m-3">
+                        <Accordion.Collapse eventKey="0">
+                            <form className="m-2" onChange={e => handleReplyChange(e, comment)} onSubmit={e => handleReplySubmit(e, comment)}>
+                                <div className="form-group">
+                                    <label htmlFor="inputComment">Type reply</label>
+                                    <textarea className={"form-control" + (idMapReplyMessage[comment._id] ? ' is-invalid' : '')} rows="3" />
+                                    {idMapReplyMessage[comment._id] && (
+                                        <div className="invalid-feedback">
+                                            {idMapReplyMessage[comment._id]}
+                                        </div>
+                                    )}
+                                </div>
+                                <button className="btn btn-primary">Submit</button>
+                            </form>
+                        </Accordion.Collapse>
+                    </div>
+                    <div>
+                    </div>
+                    <div>
+                        <button className="btn btn-link m-2" onClick={() => handleShowReply(comment)}>Show Replies({comment.replies.length})</button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </Accordion>
     );
 
     const handleSubmit = async e => {
@@ -94,7 +139,7 @@ const Comment = ({ id }) => {
             <h1>Comment</h1>
             <form className="m-2" onSubmit={handleSubmit} onChange={handleChange}>
                 <div className="form-group">
-                    <label htmlFor="inputComment">Input comment</label>
+                    <label htmlFor="inputComment">Type comment</label>
                     <textarea className="form-control" id="inputComment" rows="3" />
                 </div>
                 {message && (

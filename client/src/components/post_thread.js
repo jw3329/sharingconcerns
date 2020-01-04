@@ -64,7 +64,7 @@ const PostThread = props => {
             <div className="card">
                 <h5 className="d-flex justify-content-center card-header">{post.title}</h5>
                 <div className="card-body">
-                    <p className="d-flex justify-content-end">{Utils.toLocaleTimestamp()}</p>
+                    <p className="d-flex justify-content-end">{Utils.toLocaleTimestamp(post.updateDate)}</p>
                     <h5 className="card-text">{post.description}</h5>
                     <div className="row mt-5">
                         <button className={`justify-content-start btn btn${like ? '' : '-outline'}-success m-3`} onClick={handleLike}>Like({post.likes.length})</button>

@@ -1,6 +1,6 @@
 class Utils {
-    static toLocaleTimestamp() {
-        const date = new Date();
+    static toLocaleTimestamp(timestamp) {
+        const date = new Date(timestamp);
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
     }
 }
