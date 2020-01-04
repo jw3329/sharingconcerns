@@ -11,7 +11,6 @@ const CommentSchema = new Mongoose.Schema({
     creationDate: {
         type: Date,
         required: true,
-        trim: true,
         default: Date.now
     }, updateDate: {
         type: Date,

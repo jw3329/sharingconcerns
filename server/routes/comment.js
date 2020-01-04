@@ -34,13 +34,14 @@ comment.post('/:id/dislike', auth, async (req, res) => {
 comment.post('/:id/reply', auth, async (req, res) => {
     try {
         const { description } = req.body;
+        if (!description) throw new Error('Reply is empty');
         // if user already liked, unlike, if not like
         const reply = await new Comment({ description }).save();
         await Comment.findByIdAndUpdate(req.params.id, { $push: { replies: reply._id } });
         await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: reply._id } });
         res.status(201).json({ status: true, reply });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.json({ status: false, message: error.message });
     }
 });
 
