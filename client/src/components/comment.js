@@ -60,7 +60,9 @@ const Comment = ({ id }) => {
             const { status, message } = (await axios.post(`/comment/${comment._id}/reply`, { description: idMapReply[comment._id] })).data;
             if (!status) throw new Error(message);
             // add to the frontend right away
-            console.log('done');
+            // reset the input form
+            e.target.getElementsByTagName('textarea')[0].value = '';
+            setIdMapReply({ ...idMapReply, [comment._id]: '' });
         } catch (error) {
             setIdMapReplyMessage({ ...idMapReplyMessage, [comment._id]: error.message });
             // console.log(error.message);
