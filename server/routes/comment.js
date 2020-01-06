@@ -48,7 +48,7 @@ comment.post('/:id/reply', auth, async (req, res) => {
 comment.get('/:id/replies', async (req, res) => {
     try {
         const { replies: replyIds } = await Comment.findById({ _id: req.params.id }, { replies: 1 });
-        const replies = await Comment.find({ _id: { $in: replyIds } });
+        const replies = await Comment.find({ _id: { $in: replyIds } }).sort({ updateDate: -1 });
         res.json({ status: true, replies });
     } catch (error) {
         res.json({ status: false, message: error.message });
