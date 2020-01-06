@@ -3,6 +3,7 @@ import { Row, Col, Button, Card, Form } from 'react-bootstrap';
 import axios from 'axios';
 import AuthContext from '../contexts/auth';
 import { Link } from 'react-router-dom';
+import Utils from '../utils';
 
 
 const Post = () => {
@@ -23,8 +24,16 @@ const Post = () => {
     const generatePostCard = (post, key) => (
         <Card style={{ width: '20rem' }} key={key}>
             <Card.Body>
-                <Card.Title> <Link to={`/post/${post._id}`}>{post.title}</Link></Card.Title>
-                <div className="d-flex justify-content-end" style={{ fontSize: "smaller" }}>{`${new Date(post.updateDate).toLocaleDateString()} ${new Date(post.updateDate).toLocaleTimeString()}`}</div>
+                <div className="row">
+                    <div className="col-sm-7">
+                        <Card.Title> <Link to={`/post/${post._id}`}>{post.title}</Link></Card.Title>
+                    </div>
+                    <div className="col-sm-5" style={{ fontSize: "smaller" }}>
+                        <div>{`${post.views} views`}</div>
+                        <div>{post.user.username}</div>
+                        <div>{Utils.toLocaleTimestamp(post.updateDate)}</div>
+                    </div>
+                </div>
             </Card.Body>
         </Card>
     )

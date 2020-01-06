@@ -68,6 +68,7 @@ const Comment = ({ id }) => {
             if (!status) throw new Error(message);
             // add to the frontend right away
             // reset the input form
+            console.log(reply)
             const currentCommentReply = idMapShowReply[comment._id];
             setIdMapShowReply({ ...idMapShowReply, [comment._id]: [reply, ...currentCommentReply] });
             e.target.getElementsByTagName('textarea')[0].value = '';
@@ -82,7 +83,7 @@ const Comment = ({ id }) => {
         <div className="card m-2" key={key}>
             <div className="card-body">
                 <div className="row m-3">
-                    <div className="col-sm-2">{comment.username}</div>
+                    <div className="col-sm-2">{comment.user.username}</div>
                     <div className="col-sm-7">
                         {comment.description}
                     </div>
@@ -92,7 +93,9 @@ const Comment = ({ id }) => {
                 </div>
                 <Accordion>
                     <div className="row m-3">
-                        <Accordion.Toggle as={Button} variant="link" onClick={() => handleShowReply(comment)} eventKey="0">Show Replies({comment.replies.length})</Accordion.Toggle>
+                        <div className="offset-sm-2">
+                            <Accordion.Toggle as={Button} variant="link" onClick={() => handleShowReply(comment)} eventKey="0">Show Replies({comment.replies.length})</Accordion.Toggle>
+                        </div>
                         <div className="ml-auto">
                             <button className={`btn btn${comment.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
                             <button className={`btn btn${comment.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(comment)}>Dislike({comment.dislikes.length})</button>
@@ -128,7 +131,8 @@ const Comment = ({ id }) => {
         <div className="card m-3" key={key}>
             <div className="card-body">
                 <div className="row">
-                    <div className="col-sm-9">
+                    <div className="col-sm-2">{reply.user.username}</div>
+                    <div className="col-sm-7">
                         {reply.description}
                     </div>
                     <div className="ml-auto">
