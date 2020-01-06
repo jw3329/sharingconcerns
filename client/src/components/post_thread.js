@@ -14,6 +14,7 @@ const PostThread = props => {
     const { auth } = useContext(AuthContext);
     const [like, setLike] = useState(false);
     const [dislike, setDislike] = useState(false);
+    const [editting, setEditting] = useState(false);
 
     useEffect(() => {
         axios.get(`/post/${id}`)
@@ -55,6 +56,14 @@ const PostThread = props => {
         }
     }
 
+    const handleEdit = () => {
+        setEditting(true);
+    }
+
+    const handleChange = () => {
+
+    }
+
 
     return loaded && (
         <Fragment>
@@ -69,10 +78,28 @@ const PostThread = props => {
                         <div>{post.user.username}</div>
                         <div>{Utils.toLocaleTimestamp(post.updateDate)}</div>
                     </div>
-                    <h5 className="card-text">{post.description}</h5>
-                    <div className="row mt-5">
-                        <button className={`justify-content-start btn btn${like ? '' : '-outline'}-success m-3`} onClick={handleLike}>Like({post.likes.length})</button>
-                        <button className={`justify-content-end btn btn${dislike ? '' : '-outline'}-danger m-3`} onClick={handleDislike}>Dislike({post.dislikes.length})</button>
+                    {
+                        editting ? (
+                            <textarea className="w-100" rows="20" onChange={handleChange}>{post.description}</textarea>
+                        ) : (
+                                <h5 className="card-text">{post.description}</h5>
+                            )
+                    }
+                    <div className="d-flex justify-content-end mt-5">
+                        {
+                            editting ? (
+                                <Fragment>
+                                    <button className="btn btn-primary m-2">Submit</button>
+                                    <button className="btn btn-danger m-2">Cancel</button>
+                                </Fragment>
+                            ) : (
+                                    <Fragment>
+                                        {post.user._id === auth._id && <button className="btn btn-primary m-3" onClick={handleEdit}>Edit</button>}
+                                        <button className={`btn btn${like ? '' : '-outline'}-success m-3`} onClick={handleLike}>Like({post.likes.length})</button>
+                                        <button className={`btn btn${dislike ? '' : '-outline'}-danger m-3`} onClick={handleDislike}>Dislike({post.dislikes.length})</button>
+                                    </Fragment>
+                                )
+                        }
                     </div>
                 </div>
             </div>
