@@ -36,10 +36,10 @@ comment.post('/:id/reply', auth, async (req, res) => {
         const { description } = req.body;
         if (!description) throw new Error('Reply is empty');
         // if user already liked, unlike, if not like
-        const reply = await new Comment({ description }).save();
+        const reply = await new Comment({ description, isReply: true, userId: req.session.user._id }).save();
         await Comment.findByIdAndUpdate(req.params.id, { $push: { replies: reply._id } });
         await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: reply._id } });
-        res.status(201).json({ status: true, reply });
+        res.status(201).json({ status: true, reply: { ...reply._doc, username: req.session.user.username } });
     } catch (error) {
         res.json({ status: false, message: error.message });
     }
@@ -48,7 +48,12 @@ comment.post('/:id/reply', auth, async (req, res) => {
 comment.get('/:id/replies', async (req, res) => {
     try {
         const { replies: replyIds } = await Comment.findById({ _id: req.params.id }, { replies: 1 });
-        const replies = await Comment.find({ _id: { $in: replyIds } }).sort({ updateDate: -1 });
+        let replies = await Comment.find({ _id: { $in: replyIds } }).sort({ updateDate: -1 });
+        // userId to real user data
+        replies = await Promise.all(replies.map(async reply => {
+            const { username } = await User.findById(reply.userId, { username: 1 });
+            return { ...reply._doc, username };
+        }));
         res.json({ status: true, replies });
     } catch (error) {
         res.json({ status: false, message: error.message });

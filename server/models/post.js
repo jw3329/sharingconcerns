@@ -25,6 +25,10 @@ const PostSchema = new Mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
+    },
+    userId: {
+        type: Mongoose.Schema.Types.ObjectId,
+        required: true
     }
 });
 

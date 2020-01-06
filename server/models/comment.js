@@ -16,6 +16,17 @@ const CommentSchema = new Mongoose.Schema({
         type: Date,
         required: true,
         default: Date.now
+    },
+    // distinguish if it is reply or not
+    isReply: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    // userId,
+    userId: {
+        type: Mongoose.Schema.Types.ObjectId,
+        required: true
     }
 });
 

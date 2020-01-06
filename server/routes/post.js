@@ -5,9 +5,9 @@ const { auth } = require('../middlewares');
 
 post.post('/', auth, async (req, res) => {
     try {
-        const data = await new Post(req.body).save();
+        const data = await new Post({ ...req.body, userId: req.session.user._id }).save();
         await User.findByIdAndUpdate(req.session.user._id, { $push: { posts: data._id } });
-        res.status(201).json({ data, message: 'Successfully created' });
+        res.status(201).json({ data: { ...data._doc, username: req.session.user.username }, message: 'Successfully created' });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -65,12 +65,15 @@ post.post('/:id/dislike', auth, async (req, res) => {
 post.post('/:id/comment', auth, async (req, res) => {
     try {
         if (!req.body.description) throw new Error('Comment description required.')
-        const comment = await new Comment(req.body).save();
+        const comment = await new Comment({ ...req.body, userId: req.session.user._id }).save();
         await Post.findByIdAndUpdate(req.params.id, { $push: { comments: comment._id } });
         await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: comment._id } });
         res.status(201).json({
             status: true,
-            comment
+            comment: {
+                ...comment._doc,
+                username: req.session.user.username
+            }
         });
     } catch (error) {
         res.json({ status: false, message: error.message });
@@ -80,10 +83,14 @@ post.post('/:id/comment', auth, async (req, res) => {
 post.get('/:id/comments', async (req, res) => {
     try {
         const postComments = await Post.findById(req.params.id, { _id: 0, comments: 1 });
-        const comments = await Comment.find({ _id: { $in: postComments.comments } }).sort({ updateDate: -1 });
-        res.json(comments);
+        let comments = await Comment.find({ _id: { $in: postComments.comments } }).sort({ updateDate: -1 });
+        comments = await Promise.all(comments.map(async comment => {
+            const { username } = await User.findById(comment.userId, { username: 1 });
+            return { ...comment._doc, username };
+        }));
+        res.json({ status: true, comments });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.json({ status: false, message: error.message });
     }
 });
 
