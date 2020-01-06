@@ -17,7 +17,7 @@ const Comment = ({ id }) => {
     useEffect(() => {
         axios.get(`/post/${id}/comments`)
             .then(res => res.data)
-            .then(comments => setComments(comments))
+            .then(({ status, comments }) => status && setComments(comments))
             .catch(err => console.log(err));
     }, [id]);
 
@@ -82,7 +82,8 @@ const Comment = ({ id }) => {
         <div className="card m-2" key={key}>
             <div className="card-body">
                 <div className="row m-3">
-                    <div className="col-sm-9">
+                    <div className="col-sm-2">{comment.username}</div>
+                    <div className="col-sm-7">
                         {comment.description}
                     </div>
                     <div className="ml-auto">
@@ -119,14 +120,6 @@ const Comment = ({ id }) => {
                 </Accordion>
                 <div>
                 </div>
-                {/* <div className="m-3">
-                    {idMapShowReply[comment._id] && (
-                        <Accordion.Collapse eventKey="0">
-                            <Fragment>
-                            </Fragment>
-                        </Accordion.Collapse>
-                    )}
-                </div> */}
             </div>
         </div>
     );

@@ -15,6 +15,8 @@ const PostThread = props => {
     const [like, setLike] = useState(false);
     const [dislike, setDislike] = useState(false);
 
+
+    console.log(post)
     useEffect(() => {
         axios.get(`/post/${id}`)
             .then(res => res.data)
@@ -64,6 +66,7 @@ const PostThread = props => {
             <div className="card">
                 <h5 className="d-flex justify-content-center card-header">{post.title}</h5>
                 <div className="card-body">
+                    <p className="d-flex justify-content-start">{post.username}</p>
                     <p className="d-flex justify-content-end">{Utils.toLocaleTimestamp(post.updateDate)}</p>
                     <h5 className="card-text">{post.description}</h5>
                     <div className="row mt-5">
