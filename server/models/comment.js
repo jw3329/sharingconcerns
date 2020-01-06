@@ -5,9 +5,9 @@ const CommentSchema = new Mongoose.Schema({
         type: String,
         required: true
     },
-    likes: [Mongoose.Schema.Types.ObjectId],
-    dislikes: [Mongoose.Schema.Types.ObjectId],
-    replies: [Mongoose.Schema.Types.ObjectId],
+    likes: [{ type: Mongoose.Schema.Types.ObjectId, ref: "User" }],
+    dislikes: [{ type: Mongoose.Schema.Types.ObjectId, ref: "User" }],
+    replies: [{ type: Mongoose.Schema.Types.ObjectId, ref: "Comment" }],
     creationDate: {
         type: Date,
         required: true,
@@ -23,11 +23,7 @@ const CommentSchema = new Mongoose.Schema({
         required: true,
         default: false
     },
-    // userId,
-    userId: {
-        type: Mongoose.Schema.Types.ObjectId,
-        required: true
-    }
+    user: { type: Mongoose.Schema.Types.ObjectId, ref: "User" }
 });
 
 const Comment = Mongoose.model('Comment', CommentSchema);

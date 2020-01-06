@@ -1,7 +1,7 @@
 const Mongoose = require('../db');
 
 const likeSchema = new Mongoose.Schema({
-    posts: [Mongoose.Schema.Types.ObjectId],
+    posts: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     comments: [Mongoose.Schema.Types.ObjectId]
 });
 
@@ -37,14 +37,14 @@ const UserSchema = new Mongoose.Schema({
         lowercase: true,
         maxlength: 25
     },
-    posts: [Mongoose.Schema.Types.ObjectId],
+    posts: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     likes: likeSchema,
     dislikes: likeSchema,
-    views: [Mongoose.Schema.Types.ObjectId],
-    replied: [Mongoose.Schema.Types.ObjectId],
-    comments: [Mongoose.Schema.Types.ObjectId],
-    followers: [Mongoose.Schema.Types.ObjectId],
-    followees: [Mongoose.Schema.Types.ObjectId],
+    views: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+    replies: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+    comments: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
+    followers: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    followees: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'User' }],
     salt: String,
     creationDate: {
         type: Date,

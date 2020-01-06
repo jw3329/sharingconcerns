@@ -13,9 +13,9 @@ post.post('/', auth, async (req, res) => {
     }
 });
 
-post.get('/:postThread', auth, async (req, res) => {
+post.get('/:postThread', async (req, res) => {
     try {
-        const post = await Post.findOne({ _id: req.params.postThread });
+        const post = await Post.findOne({ _id: req.params.postThread }).populate('user', { username: 1 });
         if (!post) res.json({ status: false, message: 'No post thread found' });
         res.json({ status: true, post });
     } catch (error) {
@@ -65,16 +65,11 @@ post.post('/:id/dislike', auth, async (req, res) => {
 post.post('/:id/comment', auth, async (req, res) => {
     try {
         if (!req.body.description) throw new Error('Comment description required.')
-        const comment = await new Comment({ ...req.body, userId: req.session.user._id }).save();
+        const comment = await (await new Comment({ ...req.body, user: req.session.user._id }).save()).populate('user', { username: 1 }).execPopulate();
         await Post.findByIdAndUpdate(req.params.id, { $push: { comments: comment._id } });
         await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: comment._id } });
-        res.status(201).json({
-            status: true,
-            comment: {
-                ...comment._doc,
-                username: req.session.user.username
-            }
-        });
+        console.log(comment)
+        res.status(201).json({ status: true, comment });
     } catch (error) {
         res.json({ status: false, message: error.message });
     }
@@ -85,7 +80,7 @@ post.get('/:id/comments', async (req, res) => {
         const postComments = await Post.findById(req.params.id, { _id: 0, comments: 1 });
         let comments = await Comment.find({ _id: { $in: postComments.comments } }).sort({ updateDate: -1 });
         comments = await Promise.all(comments.map(async comment => {
-            const { username } = await User.findById(comment.userId, { username: 1 });
+            const { username } = await User.findById(comment.user, { username: 1 });
             return { ...comment._doc, username };
         }));
         res.json({ status: true, comments });

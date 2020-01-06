@@ -13,9 +13,9 @@ const PostSchema = new Mongoose.Schema({
         type: Number,
         default: 0
     },
-    likes: [Mongoose.Schema.Types.ObjectId],
-    dislikes: [Mongoose.Schema.Types.ObjectId],
-    comments: [Mongoose.Schema.Types.ObjectId],
+    likes: [{ type: Mongoose.Schema.Types.ObjectId, ref: "User" }],
+    dislikes: [{ type: Mongoose.Schema.Types.ObjectId, ref: "User" }],
+    comments: [{ type: Mongoose.Schema.Types.ObjectId, ref: "Comment" }],
     creationDate: {
         type: Date,
         required: true,
@@ -26,9 +26,10 @@ const PostSchema = new Mongoose.Schema({
         required: true,
         default: Date.now
     },
-    userId: {
+    user: {
         type: Mongoose.Schema.Types.ObjectId,
-        required: true
+        required: true,
+        ref: "User"
     }
 });
 
