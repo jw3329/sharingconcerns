@@ -64,10 +64,12 @@ const Comment = ({ id }) => {
         e.persist();
         setIdMapReplyMessage({ ...idMapReplyMessage, [comment._id]: '' });
         try {
-            const { status, message } = (await axios.post(`/comment/${comment._id}/reply`, { description: idMapReply[comment._id] })).data;
+            const { status, reply, message } = (await axios.post(`/comment/${comment._id}/reply`, { description: idMapReply[comment._id] })).data;
             if (!status) throw new Error(message);
             // add to the frontend right away
             // reset the input form
+            const currentCommentReply = idMapShowReply[comment._id];
+            setIdMapShowReply({ ...idMapShowReply, [comment._id]: [reply, ...currentCommentReply] });
             e.target.getElementsByTagName('textarea')[0].value = '';
             setIdMapReply({ ...idMapReply, [comment._id]: '' });
         } catch (error) {
@@ -77,19 +79,19 @@ const Comment = ({ id }) => {
     }
 
     const makeCard = (comment, key) => (
-        <Accordion key={key}>
-            <div className="card m-2">
-                <div className="card-body">
-                    <div className="row m-3">
-                        <div className="col-sm-9">
-                            {comment.description}
-                        </div>
-                        <div className="ml-auto">
-                            {Utils.toLocaleTimestamp(comment.updateDate)}
-                        </div>
+        <div className="card m-2" key={key}>
+            <div className="card-body">
+                <div className="row m-3">
+                    <div className="col-sm-9">
+                        {comment.description}
                     </div>
+                    <div className="ml-auto">
+                        {Utils.toLocaleTimestamp(comment.updateDate)}
+                    </div>
+                </div>
+                <Accordion>
                     <div className="row m-3">
-                        <Accordion.Toggle as={Button} eventKey="0" variant="outline-primary">Reply on the comment</Accordion.Toggle>
+                        <Accordion.Toggle as={Button} variant="link" onClick={() => handleShowReply(comment)} eventKey="0">Show Replies({comment.replies.length})</Accordion.Toggle>
                         <div className="ml-auto">
                             <button className={`btn btn${comment.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
                             <button className={`btn btn${comment.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(comment)}>Dislike({comment.dislikes.length})</button>
@@ -97,35 +99,36 @@ const Comment = ({ id }) => {
                     </div>
                     <div className="m-3">
                         <Accordion.Collapse eventKey="0">
-                            <form className="m-2" onChange={e => handleReplyChange(e, comment)} onSubmit={e => handleReplySubmit(e, comment)}>
-                                <div className="form-group">
-                                    <label htmlFor="inputComment">Type reply</label>
-                                    <textarea className={"form-control" + (idMapReplyMessage[comment._id] ? ' is-invalid' : '')} rows="3" />
-                                    {idMapReplyMessage[comment._id] && (
-                                        <div className="invalid-feedback">
-                                            {idMapReplyMessage[comment._id]}
-                                        </div>
-                                    )}
-                                </div>
-                                <button className="btn btn-primary">Submit</button>
-                            </form>
+                            <Fragment>
+                                <form className="m-2" onChange={e => handleReplyChange(e, comment)} onSubmit={e => handleReplySubmit(e, comment)}>
+                                    <div className="form-group">
+                                        <label htmlFor="inputComment">Type reply</label>
+                                        <textarea className={"form-control" + (idMapReplyMessage[comment._id] ? ' is-invalid' : '')} rows="3" />
+                                        {idMapReplyMessage[comment._id] && (
+                                            <div className="invalid-feedback">
+                                                {idMapReplyMessage[comment._id]}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <button className="btn btn-primary">Submit</button>
+                                </form>
+                                {idMapShowReply[comment._id] && idMapShowReply[comment._id].map((reply, key) => makeReplyCard(reply, key))}
+                            </Fragment>
                         </Accordion.Collapse>
                     </div>
-                    <div>
-                    </div>
-                    <div className="m-3">
-                        <Accordion.Toggle as={Button} variant="link" onClick={() => handleShowReply(comment)} eventKey="1">Show Replies({comment.replies.length})</Accordion.Toggle>
-                        {idMapShowReply[comment._id] && (
-                            <Accordion.Collapse eventKey="1">
-                                <Fragment>
-                                    {idMapShowReply[comment._id].map((reply, key) => makeReplyCard(reply, key))}
-                                </Fragment>
-                            </Accordion.Collapse>
-                        )}
-                    </div>
+                </Accordion>
+                <div>
                 </div>
+                {/* <div className="m-3">
+                    {idMapShowReply[comment._id] && (
+                        <Accordion.Collapse eventKey="0">
+                            <Fragment>
+                            </Fragment>
+                        </Accordion.Collapse>
+                    )}
+                </div> */}
             </div>
-        </Accordion>
+        </div>
     );
 
     const makeReplyCard = (reply, key) => (
