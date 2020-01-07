@@ -15,11 +15,22 @@ post.post('/', auth, async (req, res) => {
 
 post.get('/:postThread', async (req, res) => {
     try {
-        const post = await Post.findByIdAndUpdate(req.params.postThread, { $inc: { views: 1 } }).populate('user', { username: 1 });
+        const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $inc: { views: 1 } }, { new: true }).populate('user', { username: 1 })).execPopulate();
         if (!post) res.json({ status: false, message: 'No post thread found' });
         res.json({ status: true, post });
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+});
+
+post.put('/:postThread', auth, async (req, res) => {
+    try {
+        const { title, description } = req.body;
+        const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $set: { title, description } }, { new: true }).populate('user', { username: 1 })).execPopulate();
+        if (!post) throw new Error('No post thread found');
+        res.json({ status: true, post });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
     }
 });
 
