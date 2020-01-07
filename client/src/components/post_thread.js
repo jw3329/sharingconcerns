@@ -32,8 +32,8 @@ const PostThread = props => {
                 });
             })
             .then(() => setLoaded(true))
-            .catch(err => console.log(err));
-    }, [id, auth._id]);
+            .catch(err => console.log(err.message) || props.history.replace('/error/not_found'));
+    }, [id, auth._id, props.history]);
 
     document.title = post && post.title;
 
@@ -74,6 +74,16 @@ const PostThread = props => {
         setEditting(false);
     }
 
+    const handleDelete = async () => {
+        try {
+            const { status, message } = (await axios.delete(`/post/${id}`)).data;
+            if (!status) throw new Error(message);
+            props.history.replace('/post');
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
     return loaded && (
         <Fragment>
             <div className="m-2">
@@ -109,8 +119,13 @@ const PostThread = props => {
                                 </Fragment>
                             ) : (
                                     <Fragment>
-                                        {post.user._id === auth._id && <button className="btn btn-primary m-3" onClick={() => setEditting(true)}>Edit</button>}
-                                        <button className={`btn btn${like ? '' : '-outline'}-success m-3`} onClick={handleLike}>Like({post.likes.length})</button>
+                                        {post.user._id === auth._id && (
+                                            <Fragment>
+                                                <button className="btn btn-primary m-3" onClick={() => setEditting(true)}>Edit</button>
+                                                <button className="btn btn-danger m-3" onClick={handleDelete}>Delete</button>
+                                            </Fragment>
+                                        )}
+                                        < button className={`btn btn${like ? '' : '-outline'}-success m-3`} onClick={handleLike}>Like({post.likes.length})</button>
                                         <button className={`btn btn${dislike ? '' : '-outline'}-danger m-3`} onClick={handleDislike}>Dislike({post.dislikes.length})</button>
                                     </Fragment>
                                 )
@@ -119,7 +134,7 @@ const PostThread = props => {
                 </div>
             </div>
             <Comment id={id} />
-        </Fragment>
+        </Fragment >
     );
 }
 

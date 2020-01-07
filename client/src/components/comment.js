@@ -73,9 +73,28 @@ const Comment = ({ id }) => {
             setIdMapShowReply({ ...idMapShowReply, [comment._id]: [reply, ...currentCommentReply] });
             e.target.getElementsByTagName('textarea')[0].value = '';
             setIdMapReply({ ...idMapReply, [comment._id]: '' });
+            // increment comment reply number after submitting
+            comment.replies = [reply._id, ...comment.replies];
+            // reset the comments
+            setComments([...comments]);
         } catch (error) {
             setIdMapReplyMessage({ ...idMapReplyMessage, [comment._id]: error.message });
             // console.log(error.message);
+        }
+    }
+
+    const handleCommentEdit = comment => {
+        comment.edit = true;
+        setComments([...comments]);
+    }
+
+    const handleCommentDelete = async comment => {
+        try {
+            const { status, message } = await axios.delete(`/post/${id}/comment/${comment._id}`);
+            if (!status) throw new Error(message);
+            setComments(comments.filter(postComment => postComment._id !== comment._id));
+        } catch (error) {
+            console.log(error.message);
         }
     }
 
@@ -84,7 +103,7 @@ const Comment = ({ id }) => {
             <div className="card-body">
                 <div className="row m-3">
                     <div className="col-sm-2">{comment.user.username}</div>
-                    <div className="col-sm-7">
+                    <div className="col-sm-7" style={{ whiteSpace: 'pre-line' }}>
                         {comment.description}
                     </div>
                     <div className="ml-auto">
@@ -97,6 +116,12 @@ const Comment = ({ id }) => {
                             <Accordion.Toggle as={Button} variant="link" onClick={() => handleShowReply(comment)} eventKey="0">Show Replies({comment.replies.length})</Accordion.Toggle>
                         </div>
                         <div className="ml-auto">
+                            {comment.user._id === auth._id && (
+                                <Fragment>
+                                    <button className="btn btn-primary m-2" onClick={() => handleCommentEdit(comment)} >Edit</button>
+                                    <button className="btn btn-danger m-2" onClick={() => handleCommentDelete(comment)}>Delete</button>
+                                </Fragment>
+                            )}
                             <button className={`btn btn${comment.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
                             <button className={`btn btn${comment.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(comment)}>Dislike({comment.dislikes.length})</button>
                         </div>
@@ -132,7 +157,7 @@ const Comment = ({ id }) => {
             <div className="card-body">
                 <div className="row">
                     <div className="col-sm-2">{reply.user.username}</div>
-                    <div className="col-sm-7">
+                    <div className="col-sm-7" style={{ whiteSpace: 'pre-line' }}>
                         {reply.description}
                     </div>
                     <div className="ml-auto">
@@ -143,6 +168,12 @@ const Comment = ({ id }) => {
                 </div>
                 <div className="row">
                     <div className="ml-auto">
+                        {reply.user._id === auth._id && (
+                            <Fragment>
+                                <button className="btn btn-primary m-2" >Edit</button>
+                                <button className="btn btn-danger m-2" >Delete</button>
+                            </Fragment>
+                        )}
                         <button className={`btn btn${reply.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(reply)}>Like({reply.likes.length})</button>
                         <button className={`btn btn${reply.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(reply)}>Dislike({reply.dislikes.length})</button>
                     </div>

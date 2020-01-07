@@ -46,7 +46,6 @@ const Post = () => {
         e.preventDefault();
         const { data } = (await axios.post('/post', create)).data;
         setPosts([data, ...posts]);
-        console.log(data)
     }
 
     return (
