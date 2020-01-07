@@ -25,10 +25,27 @@ post.get('/:postThread', async (req, res) => {
 
 post.put('/:postThread', auth, async (req, res) => {
     try {
+        // check the user if it is auth user or not
+        const { user } = await Post.findById(req.params.postThread, { user: 1 });
+        // if it does not match with current user, then make error
+        if (user != req.session.user._id) throw new Error('Current user is not the creator');
         const { title, description } = req.body;
-        const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $set: { title, description } }, { new: true }).populate('user', { username: 1 })).execPopulate();
+        const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $set: { title, description, updateDate: Date.now() } }, { new: true }).populate('user', { username: 1 })).execPopulate();
         if (!post) throw new Error('No post thread found');
         res.json({ status: true, post });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
+    }
+});
+
+post.delete('/:postThread', auth, async (req, res) => {
+    try {
+        // check the user if it is auth user or not
+        const { user } = await Post.findById(req.params.postThread, { user: 1 });
+        // if it does not match with current user, then make error
+        if (user != req.session.user._id) throw new Error('Current user is not the creator');
+        await Post.findByIdAndDelete(req.params.postThread);
+        res.json({ status: true });
     } catch (error) {
         res.json({ status: false, message: error.message });
     }

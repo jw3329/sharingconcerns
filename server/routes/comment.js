@@ -45,6 +45,35 @@ comment.post('/:id/reply', auth, async (req, res) => {
     }
 });
 
+comment.put('/:id/reply', auth, async (req, res) => {
+    try {
+        // check the user if it is auth user or not
+        const { user } = await Comment.findById(req.params.id, { user: 1 });
+        // if it does not match with current user, then make error
+        if (user != req.session.user._id) throw new Error('Current user is not the creator');
+        const { description } = req.body;
+        if (!description) throw new Error('Reply is empty');
+        // if user already liked, unlike, if not like
+        const reply = await (await Comment.findByIdAndUpdate(req.params.id, { $set: { description, updateDate: Date.now() } }, { new: true }).populate('user', { username: 1 })).execPopulate();
+        res.json({ status: true, reply });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
+    }
+});
+
+comment.delete('/:id/reply', auth, async (req, res) => {
+    try {
+        // check the user if it is auth user or not
+        const { user } = await Comment.findById(req.params.id, { user: 1 });
+        // if it does not match with current user, then make error
+        if (user != req.session.user._id) throw new Error('Current user is not the creator');
+        await Comment.findByIdAndDelete(req.params.id);
+        res.json({ status: true });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
+    }
+});
+
 comment.get('/:id/replies', async (req, res) => {
     try {
         const { replies: replyIds } = await Comment.findById({ _id: req.params.id }, { replies: 1 });
