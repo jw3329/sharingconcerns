@@ -15,6 +15,7 @@ const PostThread = props => {
     const [like, setLike] = useState(false);
     const [dislike, setDislike] = useState(false);
     const [editting, setEditting] = useState(false);
+    const [editForm, setEditForm] = useState({});
 
     useEffect(() => {
         axios.get(`/post/${id}`)
@@ -25,6 +26,10 @@ const PostThread = props => {
                 // condition if liked or not
                 setLike(post.likes.includes(auth._id));
                 setDislike(post.dislikes.includes(auth._id));
+                setEditForm({
+                    title: post.title,
+                    description: post.description
+                });
             })
             .then(() => setLoaded(true))
             .catch(err => console.log(err));
@@ -56,14 +61,18 @@ const PostThread = props => {
         }
     }
 
-    const handleEdit = () => {
-        setEditting(true);
+
+    const handleEditSubmit = async () => {
+        try {
+            const { status, post, message } = (await axios.put(`/post/${id}`, editForm)).data;
+            if (!status) throw new Error(message);
+            console.log(post)
+            setPost(post);
+        } catch (error) {
+            console.log(error);
+        }
+        setEditting(false);
     }
-
-    const handleChange = () => {
-
-    }
-
 
     return loaded && (
         <Fragment>
@@ -71,7 +80,13 @@ const PostThread = props => {
                 <Link to='/post'>Go back</Link>
             </div>
             <div className="card">
-                <h5 className="d-flex justify-content-center card-header">{post.title}</h5>
+                {
+                    editting ? (
+                        <input type="text" className="d-flex justify-content-center text-center" onChange={e => setEditForm({ ...editForm, title: e.target.value })} defaultValue={editForm.title} />
+                    ) : (
+                            <h5 className="d-flex justify-content-center card-header">{post.title}</h5>
+                        )
+                }
                 <div className="card-body">
                     <div className="d-flex flex-column align-items-end" style={{ fontSize: 'smaller' }}>
                         <div>{post.views} views</div>
@@ -80,21 +95,21 @@ const PostThread = props => {
                     </div>
                     {
                         editting ? (
-                            <textarea className="w-100" rows="20" onChange={handleChange}>{post.description}</textarea>
+                            <textarea className="w-100" rows="20" onChange={e => setEditForm({ ...editForm, description: e.target.value })} defaultValue={editForm.description} />
                         ) : (
-                                <h5 className="card-text">{post.description}</h5>
+                                <h5 className="card-text d-block" style={{ whiteSpace: 'pre-line' }}>{post.description}</h5>
                             )
                     }
                     <div className="d-flex justify-content-end mt-5">
                         {
                             editting ? (
                                 <Fragment>
-                                    <button className="btn btn-primary m-2">Submit</button>
-                                    <button className="btn btn-danger m-2">Cancel</button>
+                                    <button className="btn btn-primary m-2" onClick={handleEditSubmit}>Submit</button>
+                                    <button className="btn btn-danger m-2" onClick={() => { setEditForm({ title: post.title, description: post.description }); setEditting(false); }}>Cancel</button>
                                 </Fragment>
                             ) : (
                                     <Fragment>
-                                        {post.user._id === auth._id && <button className="btn btn-primary m-3" onClick={handleEdit}>Edit</button>}
+                                        {post.user._id === auth._id && <button className="btn btn-primary m-3" onClick={() => setEditting(true)}>Edit</button>}
                                         <button className={`btn btn${like ? '' : '-outline'}-success m-3`} onClick={handleLike}>Like({post.likes.length})</button>
                                         <button className={`btn btn${dislike ? '' : '-outline'}-danger m-3`} onClick={handleDislike}>Dislike({post.dislikes.length})</button>
                                     </Fragment>
