@@ -5,6 +5,7 @@ import Utils from '../utils';
 import Comment from './comment';
 import AuthContext from '../contexts/auth';
 import { Modal } from 'react-bootstrap';
+import TextareaAutosize from 'react-textarea-autosize';
 
 
 const PostThread = props => {
@@ -107,7 +108,7 @@ const PostThread = props => {
                     </div>
                     {
                         editting ? (
-                            <textarea className="w-100 h-100" rows="25" onChange={e => setEditForm({ ...editForm, description: e.target.value })} defaultValue={editForm.description} />
+                            <TextareaAutosize className="w-100" onChange={e => setEditForm({ ...editForm, description: e.target.value })} defaultValue={editForm.description} />
                         ) : (
                                 <h5 className="card-text d-block" style={{ whiteSpace: 'pre-line' }}>{post.description}</h5>
                             )

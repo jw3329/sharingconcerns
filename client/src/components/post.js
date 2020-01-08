@@ -4,6 +4,7 @@ import axios from 'axios';
 import AuthContext from '../contexts/auth';
 import { Link } from 'react-router-dom';
 import Utils from '../utils';
+import TextareaAutoresize from 'react-textarea-autosize';
 
 
 const Post = () => {
@@ -46,6 +47,10 @@ const Post = () => {
         e.preventDefault();
         const { data } = (await axios.post('/post', create)).data;
         setPosts([data, ...posts]);
+        // reset the input
+        document.getElementById('title').value = '';
+        document.getElementById('description').value = '';
+        setCreate({});
     }
 
     return (
@@ -62,7 +67,8 @@ const Post = () => {
                         <Form onChange={handleChange} onSubmit={handleSubmit}>
                             <Form.Group>
                                 <Form.Control id="title" placeholder="title" />
-                                <Form.Control className="mt-2" id="description" as="textarea" rows="10" placeholder="description" />
+                                <TextareaAutoresize id="description" className="mt-2 w-100" minRows={10} placeholder="description" />
+                                {/* <Form.Control className="mt-2" id="description" as="textarea" rows="10" placeholder="description" /> */}
                             </Form.Group>
                             <Button type="submit" variant="primary">Make a post</Button>
                         </Form>

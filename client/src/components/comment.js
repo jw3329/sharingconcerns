@@ -85,6 +85,7 @@ const Comment = ({ id }) => {
 
     const handleCommentEdit = comment => {
         comment.edit = true;
+        console.log(comment)
         setComments([...comments]);
     }
 
