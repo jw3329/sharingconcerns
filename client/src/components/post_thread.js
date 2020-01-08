@@ -108,7 +108,7 @@ const PostThread = props => {
                     </div>
                     {
                         editting ? (
-                            <TextareaAutosize className="w-100" onChange={e => setEditForm({ ...editForm, description: e.target.value })} defaultValue={editForm.description} />
+                            <TextareaAutosize className="w-100" onChange={e => setEditForm({ ...editForm, description: e.target.value })} defaultValue={editForm.description} style={{ resize: 'none' }} />
                         ) : (
                                 <h5 className="card-text d-block" style={{ whiteSpace: 'pre-line' }}>{post.description}</h5>
                             )

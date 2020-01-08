@@ -3,6 +3,7 @@ import axios from 'axios';
 import Utils from '../utils';
 import AuthContext from '../contexts/auth';
 import { Accordion, Button } from 'react-bootstrap';
+import TextareaAutosize from 'react-textarea-autosize';
 
 const Comment = ({ id }) => {
 
@@ -85,7 +86,6 @@ const Comment = ({ id }) => {
 
     const handleCommentEdit = comment => {
         comment.edit = true;
-        console.log(comment)
         setComments([...comments]);
     }
 
@@ -133,7 +133,7 @@ const Comment = ({ id }) => {
                                 <form className="m-2" onChange={e => handleReplyChange(e, comment)} onSubmit={e => handleReplySubmit(e, comment)}>
                                     <div className="form-group">
                                         <label htmlFor="inputComment">Type reply</label>
-                                        <textarea className={"form-control" + (idMapReplyMessage[comment._id] ? ' is-invalid' : '')} rows="3" />
+                                        <TextareaAutosize className={"form-control" + (idMapReplyMessage[comment._id] ? ' is-invalid' : '')} minRows={3} style={{ resize: 'none' }} />
                                         {idMapReplyMessage[comment._id] && (
                                             <div className="invalid-feedback">
                                                 {idMapReplyMessage[comment._id]}
@@ -211,7 +211,7 @@ const Comment = ({ id }) => {
             <form className="m-2" onSubmit={handleSubmit} onChange={handleChange}>
                 <div className="form-group">
                     <label htmlFor="inputComment">Type comment</label>
-                    <textarea className="form-control" id="inputComment" rows="3" />
+                    <TextareaAutosize className="form-control" id="inputComment" minRows={3} style={{ resize: 'none' }} />
                 </div>
                 {message && (
                     <div className="alert alert-danger" role="alert">

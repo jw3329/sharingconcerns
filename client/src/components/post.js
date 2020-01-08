@@ -67,7 +67,7 @@ const Post = () => {
                         <Form onChange={handleChange} onSubmit={handleSubmit}>
                             <Form.Group>
                                 <Form.Control id="title" placeholder="title" />
-                                <TextareaAutoresize id="description" className="mt-2 w-100" minRows={10} placeholder="description" />
+                                <TextareaAutoresize id="description" className="mt-2 w-100" minRows={10} placeholder="description" style={{ resize: 'none' }} />
                                 {/* <Form.Control className="mt-2" id="description" as="textarea" rows="10" placeholder="description" /> */}
                             </Form.Group>
                             <Button type="submit" variant="primary">Make a post</Button>
