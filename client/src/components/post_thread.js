@@ -4,6 +4,7 @@ import axios from 'axios';
 import Utils from '../utils';
 import Comment from './comment';
 import AuthContext from '../contexts/auth';
+import { Modal } from 'react-bootstrap';
 
 
 const PostThread = props => {
@@ -16,6 +17,7 @@ const PostThread = props => {
     const [dislike, setDislike] = useState(false);
     const [editting, setEditting] = useState(false);
     const [editForm, setEditForm] = useState({});
+    const [confirm, setConfirm] = useState(false);
 
     useEffect(() => {
         axios.get(`/post/${id}`)
@@ -122,7 +124,7 @@ const PostThread = props => {
                                         {post.user._id === auth._id && (
                                             <Fragment>
                                                 <button className="btn btn-primary m-3" onClick={() => setEditting(true)}>Edit</button>
-                                                <button className="btn btn-danger m-3" onClick={handleDelete}>Delete</button>
+                                                <button className="btn btn-danger m-3" onClick={() => setConfirm(true)}>Delete</button>
                                             </Fragment>
                                         )}
                                         < button className={`btn btn${like ? '' : '-outline'}-success m-3`} onClick={handleLike}>Like({post.likes.length})</button>
@@ -134,6 +136,16 @@ const PostThread = props => {
                 </div>
             </div>
             <Comment id={id} />
+            {/* Modal showing up here */}
+            <Modal show={confirm} onHide={() => setConfirm(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Do you really want to delete?</Modal.Title>
+                </Modal.Header>
+                <Modal.Footer>
+                    <div className="btn btn-primary" onClick={() => { handleDelete(); setConfirm(false); }}>Yes</div>
+                    <div className="btn btn-danger" onClick={() => setConfirm(false)}>No</div>
+                </Modal.Footer>
+            </Modal>
         </Fragment >
     );
 }
