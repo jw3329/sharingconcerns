@@ -89,6 +89,9 @@ post.post('/:id/dislike', auth, async (req, res) => {
     }
 });
 
+/**
+ * Comment CRUD
+ */
 
 post.post('/:id/comment', auth, async (req, res) => {
     try {
@@ -107,6 +110,37 @@ post.get('/:id/comments', async (req, res) => {
         const postComments = await Post.findById(req.params.id, { _id: 0, comments: 1 });
         const comments = await Comment.find({ _id: { $in: postComments.comments } }).sort({ updateDate: -1 }).populate('user', { username: 1 });
         res.json({ status: true, comments });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
+    }
+});
+
+post.put('/:id/comment/:commentId', auth, async (req, res) => {
+    try {
+        // check the user if it is auth user or not
+        const { user } = await Comment.findById(req.params.commentId, { user: 1 });
+        // if it does not match with current user, then make error
+        if (user != req.session.user._id) throw new Error('Current user is not the creator');
+        if (!req.body.description) throw new Error('Comment description required.')
+        const comment = await (await Comment.findByIdAndUpdate(req.params.commentId, { $set: { ...req.body } })).populated('user', { username: 1 }).execPopulate();
+        res.json({ status: true, comment });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
+    }
+});
+
+post.delete('/:id/comment/:commentId', auth, async (req, res) => {
+    try {
+        // check the user if it is auth user or not
+        const { user } = await Comment.findById(req.params.commentId, { user: 1 });
+        // if it does not match with current user, then make error
+        if (user != req.session.user._id) throw new Error('Current user is not the creator');
+        // delete comment first
+        await Comment.findByIdAndDelete(req.params.commentId);
+        // delete post component
+        await Post.findByIdAndUpdate(req.params.id, { $pull: { comments: req.params.commentId } });
+        await User.findByIdAndUpdate(user, { $pull: { comments: req.params.commentId } });
+        res.status(201).json({ status: true });
     } catch (error) {
         res.json({ status: false, message: error.message });
     }

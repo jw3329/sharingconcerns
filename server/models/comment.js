@@ -17,7 +17,6 @@ const CommentSchema = new Mongoose.Schema({
         required: true,
         default: Date.now
     },
-    // distinguish if it is reply or not
     isReply: {
         type: Boolean,
         required: true,
