@@ -29,7 +29,7 @@ comment.put('/:id/reply/:replyId', auth, async (req, res) => {
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         if (!req.body.description) throw new Error('Reply description required.')
-        const comment = await (await Comment.findByIdAndUpdate(req.params.replyId, { $set: { ...req.body } })).populated('user', { username: 1 }).execPopulate();
+        const comment = await (await Comment.findByIdAndUpdate(req.params.replyId, { $set: { ...req.body } }, { new: true })).populate('user', { username: 1 }).execPopulate();
         res.json({ status: true, comment });
     } catch (error) {
         res.json({ status: false, message: error.message });

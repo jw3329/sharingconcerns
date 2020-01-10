@@ -122,7 +122,7 @@ post.put('/:id/comment/:commentId', auth, async (req, res) => {
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         if (!req.body.description) throw new Error('Comment description required.')
-        const comment = await (await Comment.findByIdAndUpdate(req.params.commentId, { $set: { ...req.body } })).populated('user', { username: 1 }).execPopulate();
+        const comment = await (await Comment.findByIdAndUpdate(req.params.commentId, { $set: { ...req.body } }, { new: true })).populate('user', { username: 1 }).execPopulate();
         res.json({ status: true, comment });
     } catch (error) {
         res.json({ status: false, message: error.message });
@@ -136,7 +136,8 @@ post.delete('/:id/comment/:commentId', auth, async (req, res) => {
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         // delete comment first
-        await Comment.findByIdAndDelete(req.params.commentId);
+        const { replies } = await Comment.findByIdAndDelete(req.params.commentId, { replies: 1 });
+        await Comment.deleteMany({ _id: replies });
         // delete post component
         await Post.findByIdAndUpdate(req.params.id, { $pull: { comments: req.params.commentId } });
         await User.findByIdAndUpdate(user, { $pull: { comments: req.params.commentId } });

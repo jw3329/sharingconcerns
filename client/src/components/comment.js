@@ -69,7 +69,6 @@ const Comment = ({ id }) => {
             if (!status) throw new Error(message);
             // add to the frontend right away
             // reset the input form
-            console.log(reply)
             const currentCommentReply = idMapShowReply[comment._id];
             setIdMapShowReply({ ...idMapShowReply, [comment._id]: [reply, ...currentCommentReply] });
             e.target.getElementsByTagName('textarea')[0].value = '';
@@ -85,7 +84,7 @@ const Comment = ({ id }) => {
     }
 
     const handleCommentEdit = comment => {
-        comment.edit = true;
+        comment.edit = !comment.edit;
         setComments([...comments]);
     }
 
@@ -104,9 +103,21 @@ const Comment = ({ id }) => {
             <div className="card-body">
                 <div className="row m-3">
                     <div className="col-sm-2">{comment.user.username}</div>
-                    <div className="col-sm-7" style={{ whiteSpace: 'pre-line' }}>
-                        {comment.description}
-                    </div>
+                    {
+                        comment.edit ? (
+                            <TextareaAutosize minRows={3} className="w-100 col-sm-7" style={{ resize: 'none' }}
+                                onChange={e => {
+                                    comment.originalValue = comment.originalValue || comment.description;
+                                    comment.description = e.target.value;
+                                    setComments([...comments]);
+                                }}
+                                defaultValue={comment.description} />
+                        ) : (
+                                <div className="col-sm-7" style={{ whiteSpace: 'pre-line' }}>
+                                    {comment.description}
+                                </div>
+                            )
+                    }
                     <div className="ml-auto">
                         {Utils.toLocaleTimestamp(comment.updateDate)}
                     </div>
@@ -117,14 +128,35 @@ const Comment = ({ id }) => {
                             <Accordion.Toggle as={Button} variant="link" onClick={() => handleShowReply(comment)} eventKey="0">Show Replies({comment.replies.length})</Accordion.Toggle>
                         </div>
                         <div className="ml-auto">
-                            {comment.user._id === auth._id && (
-                                <Fragment>
-                                    <button className="btn btn-primary m-2" onClick={() => handleCommentEdit(comment)} >Edit</button>
-                                    <button className="btn btn-danger m-2" onClick={() => handleCommentDelete(comment)}>Delete</button>
-                                </Fragment>
-                            )}
-                            <button className={`btn btn${comment.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
-                            <button className={`btn btn${comment.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(comment)}>Dislike({comment.dislikes.length})</button>
+                            {
+                                comment.edit ? (
+                                    <Fragment>
+                                        <button className="btn btn-primary m-2"
+                                            onClick={async () => {
+                                                try {
+                                                    const { status, comment: newComment, message } = (await axios.put(`/post/${id}/comment/${comment._id}`, { description: comment.description })).data;
+                                                    if (!status) throw new Error(message);
+                                                    Object.assign(comment, newComment, { originalValue: undefined });
+                                                    handleCommentEdit(comment);
+                                                } catch (error) {
+                                                    console.log(error.message);
+                                                }
+                                            }}>Submit</button>
+                                        <button className="btn btn-danger m-2" onClick={() => { comment.description = comment.originalValue || comment.description; handleCommentEdit(comment); }}>Cancel</button>
+                                    </Fragment>
+                                ) : (
+                                        <Fragment>
+                                            {comment.user._id === auth._id && (
+                                                <Fragment>
+                                                    <button className="btn btn-primary m-2" onClick={() => handleCommentEdit(comment)} >Edit</button>
+                                                    <button className="btn btn-danger m-2" onClick={() => handleCommentDelete(comment)}>Delete</button>
+                                                </Fragment>
+                                            )}
+                                            <button className={`btn btn${comment.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(comment)}>Like({comment.likes.length})</button>
+                                            <button className={`btn btn${comment.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(comment)}>Dislike({comment.dislikes.length})</button>
+                                        </Fragment>
+                                    )
+                            }
                         </div>
                     </div>
                     <div className="m-3">
@@ -150,7 +182,7 @@ const Comment = ({ id }) => {
                 <div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 
     const makeReplyCard = (reply, key) => (
