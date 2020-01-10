@@ -190,9 +190,21 @@ const Comment = ({ id }) => {
             <div className="card-body">
                 <div className="row">
                     <div className="col-sm-2">{reply.user.username}</div>
-                    <div className="col-sm-7" style={{ whiteSpace: 'pre-line' }}>
-                        {reply.description}
-                    </div>
+                    {
+                        reply.edit ? (
+                            <TextareaAutosize minRows={3} className="w-100 col-sm-7" style={{ resize: 'none' }}
+                                onChange={e => {
+                                    reply.originalValue = reply.originalValue || reply.description;
+                                    reply.description = e.target.value;
+                                    setComments([...comments]);
+                                }}
+                                defaultValue={reply.description} />
+                        ) : (
+                                <div className="col-sm-7" style={{ whiteSpace: 'pre-line' }}>
+                                    {reply.description}
+                                </div>
+                            )
+                    }
                     <div className="ml-auto">
                         <div className="m-2">
                             {Utils.toLocaleTimestamp(reply.updateDate)}
@@ -203,7 +215,7 @@ const Comment = ({ id }) => {
                     <div className="ml-auto">
                         {reply.user._id === auth._id && (
                             <Fragment>
-                                <button className="btn btn-primary m-2" >Edit</button>
+                                <button className="btn btn-primary m-2" onClick={() => handleCommentEdit(reply)}>Edit</button>
                                 <button className="btn btn-danger m-2" >Delete</button>
                             </Fragment>
                         )}
