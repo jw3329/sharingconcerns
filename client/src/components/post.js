@@ -12,6 +12,7 @@ const Post = () => {
     const { auth } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
     const [create, setCreate] = useState({});
+    const [message, setMessage] = useState('');
 
     useEffect(() => {
         let mounted = false;
@@ -45,12 +46,17 @@ const Post = () => {
 
     const handleSubmit = async e => {
         e.preventDefault();
-        const { data } = (await axios.post('/post', create)).data;
-        setPosts([data, ...posts]);
-        // reset the input
-        document.getElementById('title').value = '';
-        document.getElementById('description').value = '';
-        setCreate({});
+        try {
+            const { status, data, message } = (await axios.post('/post', create)).data;
+            if (!status) throw new Error(message);
+            setPosts([data, ...posts]);
+            // reset the input
+            document.getElementById('title').value = '';
+            document.getElementById('description').value = '';
+            setCreate({});
+        } catch (error) {
+            setMessage(error.message);
+        }
     }
 
     return (
@@ -67,9 +73,9 @@ const Post = () => {
                         <Form onChange={handleChange} onSubmit={handleSubmit}>
                             <Form.Group>
                                 <Form.Control id="title" placeholder="title" />
-                                <TextareaAutoresize id="description" className="mt-2 w-100" minRows={10} placeholder="description" style={{ resize: 'none' }} />
-                                {/* <Form.Control className="mt-2" id="description" as="textarea" rows="10" placeholder="description" /> */}
+                                <TextareaAutoresize id="description" className="mt-2 w-100 p-2" minRows={10} placeholder="description" style={{ resize: 'none' }} />
                             </Form.Group>
+                            {message && <div className="alert alert-danger">{message}</div>}
                             <Button type="submit" variant="primary">Make a post</Button>
                         </Form>
                     </div>
