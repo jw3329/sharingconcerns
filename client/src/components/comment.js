@@ -11,8 +11,11 @@ const Comment = ({ id }) => {
     const [inputComment, setInputComment] = useState('');
     const [message, setMessage] = useState('');
     const { auth } = useContext(AuthContext);
+
+    // for input purpose
     const [idMapReply, setIdMapReply] = useState({});
     const [idMapReplyMessage, setIdMapReplyMessage] = useState({});
+    // for showing purpose, comment id mapping to reply objects array
     const [idMapShowReply, setIdMapShowReply] = useState({});
 
     useEffect(() => {
@@ -88,9 +91,14 @@ const Comment = ({ id }) => {
         setComments([...comments]);
     }
 
+    const handleReplyEdit = reply => {
+        reply.edit = !reply.edit;
+        setIdMapShowReply({ ...idMapShowReply });
+    }
+
     const handleCommentDelete = async comment => {
         try {
-            const { status, message } = await axios.delete(`/post/${id}/comment/${comment._id}`);
+            const { status, message } = (await axios.delete(`/post/${id}/comment/${comment._id}`)).data;
             if (!status) throw new Error(message);
             setComments(comments.filter(postComment => postComment._id !== comment._id));
         } catch (error) {
@@ -174,7 +182,7 @@ const Comment = ({ id }) => {
                                     </div>
                                     <button className="btn btn-primary">Submit</button>
                                 </form>
-                                {idMapShowReply[comment._id] && idMapShowReply[comment._id].map((reply, key) => makeReplyCard(reply, key))}
+                                {idMapShowReply[comment._id] && idMapShowReply[comment._id].map((reply, key) => makeReplyCard(comment, reply, key))}
                             </Fragment>
                         </Accordion.Collapse>
                     </div>
@@ -185,7 +193,7 @@ const Comment = ({ id }) => {
         </div >
     );
 
-    const makeReplyCard = (reply, key) => (
+    const makeReplyCard = (comment, reply, key) => (
         <div className="card m-3" key={key}>
             <div className="card-body">
                 <div className="row">
@@ -196,7 +204,8 @@ const Comment = ({ id }) => {
                                 onChange={e => {
                                     reply.originalValue = reply.originalValue || reply.description;
                                     reply.description = e.target.value;
-                                    setComments([...comments]);
+                                    // make it happen after changing the value
+                                    setIdMapShowReply({ ...idMapShowReply });
                                 }}
                                 defaultValue={reply.description} />
                         ) : (
@@ -219,22 +228,31 @@ const Comment = ({ id }) => {
                                     <button className="btn btn-primary m-2"
                                         onClick={async () => {
                                             try {
-                                                const { status, reply: newReply, message } = (await axios.put(`/comment/${id}/comment/${reply._id}`, { description: reply.description })).data;
+                                                const { status, reply: newReply, message } = (await axios.put(`/comment/${comment._id}/reply/${reply._id}`, { description: reply.description })).data;
                                                 if (!status) throw new Error(message);
                                                 Object.assign(reply, newReply, { originalValue: undefined });
-                                                handleCommentEdit(reply);
+                                                handleReplyEdit(reply);
                                             } catch (error) {
                                                 console.log(error.message);
                                             }
                                         }}>Submit</button>
-                                    <button className="btn btn-danger m-2" onClick={() => { reply.description = reply.originalValue || reply.description; handleCommentEdit(reply); }}>Cancel</button>
+                                    <button className="btn btn-danger m-2" onClick={() => { reply.description = reply.originalValue || reply.description; handleReplyEdit(reply); }}>Cancel</button>
                                 </Fragment>
                             ) : (
                                     <Fragment>
                                         {reply.user._id === auth._id && (
                                             <Fragment>
-                                                <button className="btn btn-primary m-2" onClick={() => handleCommentEdit(reply)}>Edit</button>
-                                                <button className="btn btn-danger m-2" >Delete</button>
+                                                <button className="btn btn-primary m-2" onClick={() => handleReplyEdit(reply)}>Edit</button>
+                                                <button className="btn btn-danger m-2" onClick={async () => {
+                                                    try {
+                                                        const { status, message } = (await axios.delete(`/comment/${comment._id}/reply/${reply._id}`)).data;
+                                                        if (!status) throw new Error(message);
+                                                        console.log(status)
+                                                        setIdMapShowReply({ ...idMapShowReply, [comment._id]: idMapShowReply[comment._id].filter(postReply => postReply._id !== reply.id) });
+                                                    } catch (error) {
+                                                        console.log(error.message);
+                                                    }
+                                                }} >Delete</button>
                                             </Fragment>
                                         )}
                                         <button className={`btn btn${reply.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(reply)}>Like({reply.likes.length})</button>
