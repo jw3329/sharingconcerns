@@ -54,7 +54,7 @@ post.delete('/:postThread', auth, async (req, res) => {
 post.get('/user/:username', auth, async (req, res) => {
     try {
         const { posts: postsId } = await User.findOne({ username: req.params.username }, 'posts');
-        const posts = await Post.find({ _id: { $in: postsId } }, null, { sort: { updateDate: -1 } }).populate('user', { username: 1 });
+        const posts = await Post.find({ _id: { $in: postsId } }, null, { sort: { creationDate: 1 } }).populate('user', { username: 1 });
         res.json({ status: true, posts });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -108,7 +108,7 @@ post.post('/:id/comment', auth, async (req, res) => {
 post.get('/:id/comments', async (req, res) => {
     try {
         const postComments = await Post.findById(req.params.id, { _id: 0, comments: 1 });
-        const comments = await Comment.find({ _id: { $in: postComments.comments } }).sort({ updateDate: -1 }).populate('user', { username: 1 });
+        const comments = await Comment.find({ _id: { $in: postComments.comments } }, null, { sort: { creationDate: 1 } }).populate('user', { username: 1 });
         res.json({ status: true, comments });
     } catch (error) {
         res.json({ status: false, message: error.message });
@@ -122,7 +122,7 @@ post.put('/:id/comment/:commentId', auth, async (req, res) => {
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         if (!req.body.description) throw new Error('Comment description required.')
-        const comment = await (await Comment.findByIdAndUpdate(req.params.commentId, { $set: { ...req.body } }, { new: true })).populate('user', { username: 1 }).execPopulate();
+        const comment = await (await Comment.findByIdAndUpdate(req.params.commentId, { $set: { ...req.body, updateDate: Date.now() } }, { new: true })).populate('user', { username: 1 }).execPopulate();
         res.json({ status: true, comment });
     } catch (error) {
         res.json({ status: false, message: error.message });

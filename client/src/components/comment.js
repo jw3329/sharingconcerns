@@ -73,7 +73,7 @@ const Comment = ({ id }) => {
             // add to the frontend right away
             // reset the input form
             const currentCommentReply = idMapShowReply[comment._id];
-            setIdMapShowReply({ ...idMapShowReply, [comment._id]: [reply, ...currentCommentReply] });
+            setIdMapShowReply({ ...idMapShowReply, [comment._id]: [...currentCommentReply, reply] });
             e.target.getElementsByTagName('textarea')[0].value = '';
             setIdMapReply({ ...idMapReply, [comment._id]: '' });
             // increment comment reply number after submitting
@@ -277,7 +277,7 @@ const Comment = ({ id }) => {
             const res = (await axios.post(`/post/${id}/comment`, { description: inputComment })).data;
             if (!res.status) return setMessage(res.message);
             // make the newest comment on the top
-            setComments([res.comment, ...comments]);
+            setComments([...comments, res.comment]);
             // make it empty as well
             setInputComment('');
         } catch (error) {

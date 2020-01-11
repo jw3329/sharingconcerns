@@ -29,8 +29,8 @@ comment.put('/:id/reply/:replyId', auth, async (req, res) => {
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         if (!req.body.description) throw new Error('Reply description required.')
-        const comment = await (await Comment.findByIdAndUpdate(req.params.replyId, { $set: { ...req.body } }, { new: true })).populate('user', { username: 1 }).execPopulate();
-        res.json({ status: true, comment });
+        const reply = await (await Comment.findByIdAndUpdate(req.params.replyId, { $set: { ...req.body, updateDate: Date.now() } }, { new: true })).populate('user', { username: 1 }).execPopulate();
+        res.json({ status: true, reply });
     } catch (error) {
         res.json({ status: false, message: error.message });
     }
@@ -54,7 +54,7 @@ comment.delete('/:id/reply/:replyId', auth, async (req, res) => {
 comment.get('/:id/replies', async (req, res) => {
     try {
         const { replies: replyIds } = await Comment.findById({ _id: req.params.id }, { replies: 1 });
-        const replies = await Comment.find({ _id: { $in: replyIds } }).sort({ updateDate: -1 }).populate('user', { username: 1 });
+        const replies = await Comment.find({ _id: { $in: replyIds } }, null, { sort: { creationDate: 1 } }).populate('user', { username: 1 });
         res.json({ status: true, replies });
     } catch (error) {
         res.json({ status: false, message: error.message });
