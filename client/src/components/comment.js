@@ -213,14 +213,36 @@ const Comment = ({ id }) => {
                 </div>
                 <div className="row">
                     <div className="ml-auto">
-                        {reply.user._id === auth._id && (
-                            <Fragment>
-                                <button className="btn btn-primary m-2" onClick={() => handleCommentEdit(reply)}>Edit</button>
-                                <button className="btn btn-danger m-2" >Delete</button>
-                            </Fragment>
-                        )}
-                        <button className={`btn btn${reply.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(reply)}>Like({reply.likes.length})</button>
-                        <button className={`btn btn${reply.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(reply)}>Dislike({reply.dislikes.length})</button>
+                        {
+                            reply.edit ? (
+                                <Fragment>
+                                    <button className="btn btn-primary m-2"
+                                        onClick={async () => {
+                                            try {
+                                                const { status, reply: newReply, message } = (await axios.put(`/comment/${id}/comment/${reply._id}`, { description: reply.description })).data;
+                                                if (!status) throw new Error(message);
+                                                Object.assign(reply, newReply, { originalValue: undefined });
+                                                handleCommentEdit(reply);
+                                            } catch (error) {
+                                                console.log(error.message);
+                                            }
+                                        }}>Submit</button>
+                                    <button className="btn btn-danger m-2" onClick={() => { reply.description = reply.originalValue || reply.description; handleCommentEdit(reply); }}>Cancel</button>
+                                </Fragment>
+                            ) : (
+                                    <Fragment>
+                                        {reply.user._id === auth._id && (
+                                            <Fragment>
+                                                <button className="btn btn-primary m-2" onClick={() => handleCommentEdit(reply)}>Edit</button>
+                                                <button className="btn btn-danger m-2" >Delete</button>
+                                            </Fragment>
+                                        )}
+                                        <button className={`btn btn${reply.likes.includes(auth._id) ? '' : '-outline'}-success m-2`} onClick={() => handleLike(reply)}>Like({reply.likes.length})</button>
+                                        <button className={`btn btn${reply.dislikes.includes(auth._id) ? '' : '-outline'}-danger m-2`} onClick={() => handleDislike(reply)}>Dislike({reply.dislikes.length})</button>
+                                    </Fragment>
+                                )
+                        }
+
                     </div>
                 </div>
             </div>
