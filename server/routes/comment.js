@@ -43,7 +43,7 @@ comment.delete('/:id/reply/:replyId', auth, async (req, res) => {
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         await Comment.findByIdAndDelete(req.params.replyId);
-        await Comment.findByIdAndUpdate(req.params.id, { $pull: { comments: req.params.replyId } });
+        await Comment.findByIdAndUpdate(req.params.id, { $pull: { replies: req.params.replyId } });
         await User.findByIdAndUpdate(user, { $pull: { comments: req.params.replyId } });
         res.json({ status: true });
     } catch (error) {

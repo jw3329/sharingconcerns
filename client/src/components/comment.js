@@ -247,8 +247,9 @@ const Comment = ({ id }) => {
                                                     try {
                                                         const { status, message } = (await axios.delete(`/comment/${comment._id}/reply/${reply._id}`)).data;
                                                         if (!status) throw new Error(message);
-                                                        console.log(status)
-                                                        setIdMapShowReply({ ...idMapShowReply, [comment._id]: idMapShowReply[comment._id].filter(postReply => postReply._id !== reply.id) });
+                                                        setIdMapShowReply({ ...idMapShowReply, [comment._id]: idMapShowReply[comment._id].filter(postReply => postReply._id !== reply._id) });
+                                                        comment.replies = comment.replies.filter(postReply => postReply !== reply._id);
+                                                        setComments([...comments]);
                                                     } catch (error) {
                                                         console.log(error.message);
                                                     }
