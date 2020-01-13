@@ -6,6 +6,7 @@ import Home from '../components/home';
 import Post from '../components/post';
 import PostThread from '../components/post_thread';
 import AuthContext from '../contexts/auth';
+import Setting from '../components/setting';
 
 
 
@@ -22,7 +23,8 @@ const RoutesIndex = () => {
         if (auth) {
             const authRoutes = {
                 '/post': Post,
-                '/post/:id': PostThread
+                '/post/:id': PostThread,
+                '/setting': Setting
             }
             setRoutes(routes => ({ ...routes, ...authRoutes }));
         }
