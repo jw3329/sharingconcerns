@@ -6,25 +6,24 @@ import Home from '../components/home';
 import Post from '../components/post';
 import PostThread from '../components/post_thread';
 import AuthContext from '../contexts/auth';
-import Setting from '../components/setting';
-
+import Settings from '../components/settings';
 
 
 const RoutesIndex = () => {
 
     const { auth } = useContext(AuthContext);
     const [routes, setRoutes] = useState({
-        '/': Home,
-        '/signup': Signup,
-        '/signin': Signin
+        '/': { component: Home, exact: true },
+        '/signup': { component: Signup, exact: true },
+        '/signin': { component: Signin, exact: true }
     });
 
     useEffect(() => {
         if (auth) {
             const authRoutes = {
-                '/post': Post,
-                '/post/:id': PostThread,
-                '/setting': Setting
+                '/post': { component: Post, exact: true },
+                '/post/:id': { component: PostThread, exact: true },
+                '/settings': { component: Settings, exact: false }
             }
             setRoutes(routes => ({ ...routes, ...authRoutes }));
         }
@@ -35,9 +34,9 @@ const RoutesIndex = () => {
             {(() => {
                 const res = [];
                 for (const path in routes) {
-                    res.push(<Route exact path={path} key={path} component={routes[path]}></Route>);
+                    res.push(<Route exact={routes[path].exact} path={path} key={path} component={routes[path].component}></Route>);
                 }
-                res.push(<Route key={'error'}><Error /></Route>);
+                res.push(<Route key={'error'} component={Error} />);
                 return res;
             })()}
         </Switch>

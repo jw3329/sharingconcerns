@@ -29,7 +29,7 @@ const NavbarLayout = () => {
                     auth ? (
                         <Fragment>
                             <Nav.Link disabled>Hello, {auth.username}</Nav.Link>
-                            <Nav.Link as={NavLink} to="/setting">Setting</Nav.Link>
+                            <Nav.Link as={NavLink} to="/settings">Settings</Nav.Link>
                             <Nav.Link onClick={handleSignout}>Sign out</Nav.Link>
                         </Fragment>
                     ) : (
