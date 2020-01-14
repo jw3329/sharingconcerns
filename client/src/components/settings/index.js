@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Route, NavLink, Switch } from 'react-router-dom';
 import Error from '../error';
 import Profile from './profile';
@@ -6,17 +6,20 @@ import { Nav } from 'react-bootstrap';
 
 const Settings = props => {
 
+    const [loaded, setLoaded] = useState(false);
+
     useEffect(() => {
         const path = props.location.pathname.substring('/settings'.length);
         // if no path is entered, redirect to profile link
         if (!path) props.history.replace('/settings/profile');
-    }, [props.history, props.location]);
+        setLoaded(true);
+    }, [props.history, props.location, setLoaded]);
 
     const routeMap = {
         '/profile': Profile
     }
 
-    return (
+    return loaded && (
         <Fragment>
             <Nav justify fill variant="tabs">
                 <Nav.Item>
