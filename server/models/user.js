@@ -45,16 +45,21 @@ const UserSchema = new Mongoose.Schema({
     comments: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     followers: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'User' }],
     followees: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    salt: String,
     creationDate: {
         type: Date,
         required: true,
         default: Date.now
-    }, updateDate: {
+    },
+    updateDate: {
         type: Date,
         required: true,
         default: Date.now
-    }
+    },
+    bio: String,
+    url: String,
+    company: String,
+    location: String,
+    profileImage: String
 });
 
 const User = Mongoose.model('User', UserSchema);

@@ -4,6 +4,18 @@ const { User } = require('../models');
 const bcrypt = require('bcrypt');
 const { auth } = require('../middlewares/index');
 
+const userFields = {
+    password: 0,
+    posts: 0,
+    likes: 0,
+    dislikes: 0,
+    views: 0,
+    replies: 0,
+    comments: 0,
+    followers: 0,
+    followees: 0
+};
+
 user.post('/signup', async (req, res) => {
     try {
         const user = await User.findOne({ $or: [{ email: req.body.email }, { username: req.body.username }] });
@@ -22,10 +34,12 @@ user.post('/signup', async (req, res) => {
 user.post('/authorize', async (req, res) => {
     try {
         if (req.session.user) throw new Error('User already has signed in');
-        const user = await User.findOne({ username: req.body.username }, 'email username password firstName lastName creationDate updateDate');
+        const refinedUserFields = { ...userFields };
+        delete refinedUserFields.password;
+        const user = (await User.findOne({ username: req.body.username }, refinedUserFields)).toObject();
         if (!user) throw new Error('User does not exist with given username');
         if (!await bcrypt.compare(req.body.password, user.password)) throw new Error('Password does not match');
-        user.password = undefined;
+        delete user.password;
         req.session.user = user;
         res.json({ status: true, user });
     } catch (error) {
@@ -64,6 +78,19 @@ user.get('/:id', async (req, res) => {
         res.json({ status: true, user });
     } catch (error) {
         res.json({ status: false, message: 'No user found' });
+    }
+});
+
+user.put('/:id', auth, async (req, res) => {
+    try {
+        // check for the authorization
+        if (req.session.user._id !== req.params.id) throw new Error('Not authorized to change');
+        const user = await User.findByIdAndUpdate(req.params.id,
+            { $set: { ...req.body, updateDate: Date.now() } }, { new: true, fields: userFields });
+        req.session.user = user;
+        res.json({ status: true, user, message: 'Successfully updated the user' });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
     }
 });
 
