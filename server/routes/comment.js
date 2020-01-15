@@ -15,7 +15,7 @@ comment.post('/:id/reply', auth, async (req, res) => {
         // if user already liked, unlike, if not like
         const reply = await (await new Comment({ description, isReply: true, user: req.session.user._id }).save()).populate('user', { username: 1 }).execPopulate();
         await Comment.findByIdAndUpdate(req.params.id, { $push: { replies: reply._id } });
-        await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: reply._id } });
+        await User.findByIdAndUpdate(req.session.user._id, { $push: { replies: reply._id } });
         res.status(201).json({ status: true, reply });
     } catch (error) {
         res.json({ status: false, message: error.message });
@@ -44,7 +44,7 @@ comment.delete('/:id/reply/:replyId', auth, async (req, res) => {
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         await Comment.findByIdAndDelete(req.params.replyId);
         await Comment.findByIdAndUpdate(req.params.id, { $pull: { replies: req.params.replyId } });
-        await User.findByIdAndUpdate(user, { $pull: { comments: req.params.replyId } });
+        await User.findByIdAndUpdate(user, { $pull: { replies: req.params.replyId } });
         res.json({ status: true });
     } catch (error) {
         res.json({ status: false, message: error.message });

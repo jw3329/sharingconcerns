@@ -19,6 +19,7 @@ post.post('/', auth, async (req, res) => {
 post.get('/:postThread', async (req, res) => {
     try {
         const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $inc: { views: 1 } }, { new: true }).populate('user', { username: 1 })).execPopulate();
+        await User.findByIdAndUpdate(req.session.user._id, { $push: { views: req.params.postThread } });
         if (!post) res.json({ status: false, message: 'No post thread found' });
         res.json({ status: true, post });
     } catch (error) {

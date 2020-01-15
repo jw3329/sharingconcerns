@@ -9,6 +9,8 @@ import TextareaAutoresize from 'react-textarea-autosize';
 
 const Post = () => {
 
+    document.title = 'My posts';
+
     const { auth } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
     const [create, setCreate] = useState({});
