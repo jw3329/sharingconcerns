@@ -18,9 +18,21 @@ const Profile = () => {
     }
 
     const handleChange = e => {
+        if (e.target.id === 'profileImage') {
+            handleProfileImageChange(e);
+        } else {
+            setProfileForm({
+                ...profileForm,
+                [e.target.id]: e.target.value
+            });
+        }
+    }
+
+    const handleProfileImageChange = e => {
+        const file = e.target.files[0] || null;
         setProfileForm({
             ...profileForm,
-            [e.target.id]: e.target.value
+            [e.target.id]: file
         });
     }
 
@@ -28,6 +40,11 @@ const Profile = () => {
         <Form onSubmit={handleSubmit} onChange={handleChange}>
             <Row className="justify-content-md-center">
                 <Col sm={6}>
+                    <div className="form-group">
+                        {profileForm.profileImage && <img className="w-50 h-50" src={URL.createObjectURL(profileForm.profileImage)} alt="" />}
+                        <label htmlFor="profileImage">Profile image input</label>
+                        <input type="file" className="form-control-file" id="profileImage" accept="image/*" />
+                    </div>
                     <Form.Group controlId="firstName">
                         <Form.Label>Firstname</Form.Label>
                         <Form.Control type="text" placeholder="Firstname" defaultValue={auth.firstName} />
