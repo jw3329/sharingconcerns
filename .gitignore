@@ -4,3 +4,5 @@
 # ignore vscode local settings
 
 **/.vscode
+
+server/images
