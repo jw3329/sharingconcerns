@@ -36,7 +36,7 @@ const PostThread = props => {
             })
             .then(() => setLoaded(true))
             .catch(err => console.log(err.message) || props.history.replace('/error/not_found'));
-    }, [id, auth._id, props.history]);
+    }, [id, auth, props.history]);
 
     document.title = post && post.title;
 

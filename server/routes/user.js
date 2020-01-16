@@ -3,6 +3,16 @@ const user = express.Router();
 const { User } = require('../models');
 const bcrypt = require('bcrypt');
 const { auth } = require('../middlewares/index');
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: './images',
+    filename: (req, file, cb) => {
+        cb(null, file.originalname + '_' + Date.now());
+    }
+});
+
+const upload = multer({ storage }).single('image');
 
 const userFields = {
     password: 0,
@@ -81,14 +91,33 @@ user.get('/:id', async (req, res) => {
     }
 });
 
-user.put('/:id', auth, async (req, res) => {
+user.put('/', auth, async (req, res) => {
     try {
-        // check for the authorization
-        if (req.session.user._id !== req.params.id) throw new Error('Not authorized to change');
-        const user = await User.findByIdAndUpdate(req.params.id,
+        const user = await User.findByIdAndUpdate(req.session.user._id,
             { $set: { ...req.body, updateDate: Date.now() } }, { new: true, fields: userFields });
         req.session.user = user;
         res.json({ status: true, user, message: 'Successfully updated the user' });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
+    }
+});
+
+user.put('/profileImage', auth, async (req, res) => {
+    try {
+        upload(req, res, async err => {
+            if (err) throw new Error(err);
+            await User.findByIdAndUpdate(req.session.user._id, { $set: { profileImage: req.file.filename } });
+            res.json({ status: true });
+        });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
+    }
+});
+
+user.get('/:id/profileImage', auth, async (req, res) => {
+    try {
+        const { profileImage } = await User.findById(req.params.id, { profileImage: 1 });
+        res.sendFile(__dirname + '/../images' + profileImage);
     } catch (error) {
         res.json({ status: false, message: error.message });
     }
