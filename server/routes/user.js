@@ -4,11 +4,12 @@ const { User } = require('../models');
 const bcrypt = require('bcrypt');
 const { auth } = require('../middlewares/index');
 const multer = require('multer');
+const path = require('path');
 
 const storage = multer.diskStorage({
     destination: './images',
     filename: (req, file, cb) => {
-        cb(null, file.originalname + '_' + Date.now());
+        cb(null, Date.now() + '_' + file.originalname);
     }
 });
 
@@ -106,7 +107,7 @@ user.put('/profileImage', auth, async (req, res) => {
     try {
         upload(req, res, async err => {
             if (err) throw new Error(err);
-            await User.findByIdAndUpdate(req.session.user._id, { $set: { profileImage: req.file.filename } });
+            await User.findByIdAndUpdate(req.session.user._id, { $set: { profileImage: req.file ? req.file.filename : null } });
             res.json({ status: true });
         });
     } catch (error) {
@@ -117,7 +118,8 @@ user.put('/profileImage', auth, async (req, res) => {
 user.get('/:id/profileImage', auth, async (req, res) => {
     try {
         const { profileImage } = await User.findById(req.params.id, { profileImage: 1 });
-        res.sendFile(__dirname + '/../images' + profileImage);
+        if (!profileImage) throw new Error('No profile image found');
+        res.sendFile(path.resolve('images/' + profileImage));
     } catch (error) {
         res.json({ status: false, message: error.message });
     }

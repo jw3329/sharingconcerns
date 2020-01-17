@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 import AuthContext from '../../contexts/auth';
 import axios from 'axios';
@@ -8,14 +8,16 @@ const Profile = () => {
     const { auth, setAuth } = useContext(AuthContext);
     const [profileForm, setProfileForm] = useState({});
     const [message, setMessage] = useState({});
-    const [profileImage, setProfileImage] = useState(null);
+    const [profileImage, setProfileImage] = useState(false);
 
     const handleSubmit = async e => {
         e.preventDefault();
         setMessage({});
-        const profileImageData = new FormData();
-        profileImageData.append('image', profileImage);
-        const data = await axios.put(`/user/profileImage`, profileImageData);
+        if (profileImage !== false) {
+            const profileImageData = new FormData();
+            profileImageData.append('image', profileImage);
+            await axios.put(`/user/profileImage`, profileImageData);
+        }
         const { status, user, message } = (await axios.put(`/user`, profileForm)).data;
         setMessage({ status, message });
         setAuth(user);
@@ -32,13 +34,6 @@ const Profile = () => {
         }
     }
 
-    useEffect(() => {
-        if (auth) {
-            axios.get(`/user/${auth._id}/profileImage`)
-                .then(res => console.log(res));
-        }
-    }, [auth]);
-
     const handleProfileImageChange = e => {
         setProfileImage(e.target.files[0] || null);
     }
@@ -48,7 +43,20 @@ const Profile = () => {
             <Row className="justify-content-md-center">
                 <Col sm={6}>
                     <div className="form-group">
-                        {profileImage && <div><img className="w-50 h-50" src={URL.createObjectURL(profileImage)} alt="" /></div>}
+                        {
+                            // complex operation is needed to show up in the frontend
+                            (profileImage !== null || (profileImage === false && auth.profileImage)) && (
+                                <div>
+                                    {
+                                        profileImage === false ? (
+                                            <img className="w-50 h-50" src={`http://localhost:8000/api/user/${auth._id}/profileImage`} alt="" />
+                                        ) : (
+                                                <img className="w-50 h-50" src={URL.createObjectURL(profileImage)} alt="" />
+                                            )
+                                    }
+                                </div>
+                            )
+                        }
                         <label htmlFor="profileImage">Profile image input</label>
                         <input type="file" className="form-control-file" id="profileImage" accept="image/*" />
                     </div>
@@ -76,7 +84,7 @@ const Profile = () => {
                         <Form.Label>Location</Form.Label>
                         <Form.Control type="text" placeholder="Location" defaultValue={auth.location} />
                     </Form.Group>
-                    <Button variant="primary" type="submit">Update</Button>
+                    <Button className="mb-2" variant="primary" type="submit">Update</Button>
                     {
                         message.status !== undefined && (
                             <Alert className="mt-3" variant={message.status ? 'success' : 'danger'}>
