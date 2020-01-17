@@ -1,7 +1,8 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, Fragment } from 'react';
 import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 import AuthContext from '../../contexts/auth';
 import axios from 'axios';
+import defaultProfile from '../../images/default-profile.png';
 
 const Profile = () => {
 
@@ -45,20 +46,32 @@ const Profile = () => {
                     <div className="form-group">
                         {
                             // complex operation is needed to show up in the frontend
-                            (profileImage !== null || (profileImage === false && auth.profileImage)) && (
-                                <div>
-                                    {
-                                        profileImage === false ? (
-                                            <img className="w-50 h-50" src={`http://localhost:8000/api/user/${auth._id}/profileImage`} alt="" />
-                                        ) : (
-                                                <img className="w-50 h-50" src={URL.createObjectURL(profileImage)} alt="" />
-                                            )
+                            (() => {
+                                const src = (() => {
+                                    let src = null;
+                                    if (profileImage === null) {
+                                        src = defaultProfile;
+                                    } else if (profileImage) {
+                                        src = URL.createObjectURL(profileImage);
+                                        // return <img className="w-50 h-50" src={URL.createObjectURL(profileImage)} alt="" />;
+                                    } else {
+                                        if (auth.profileImage) src = `http://localhost:8000/api/user/${auth._id}/profileImage`;
+                                        else src = defaultProfile;
+                                        // return <img className="w-50 h-50" src={`http://localhost:8000/api/user/${auth._id}/profileImage`} alt="" />;
+                                        // else return null;
                                     }
-                                </div>
-                            )
+                                    return src;
+                                })();
+                                return (
+                                    <Fragment>
+                                        {<label htmlFor="profileImage"><img className="w-50 h-50" src={src} alt="" /></label>}
+                                        {src !== defaultProfile && <div className="my-2"><button className="btn btn-primary w-50" onClick={() => setProfileImage(null)}>Clear</button></div>}
+                                    </Fragment>
+                                );
+                            })()
                         }
-                        <label htmlFor="profileImage">Profile image input</label>
-                        <input type="file" className="form-control-file" id="profileImage" accept="image/*" />
+                        <p>Click to change</p>
+                        <input type="file" className="form-control-file d-none" id="profileImage" accept="image/*" />
                     </div>
                     <Form.Group controlId="firstName">
                         <Form.Label>Firstname</Form.Label>
