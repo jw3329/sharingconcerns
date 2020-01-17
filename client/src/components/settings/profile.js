@@ -3,6 +3,7 @@ import { Form, Row, Col, Button, Alert } from 'react-bootstrap';
 import AuthContext from '../../contexts/auth';
 import axios from 'axios';
 import defaultProfile from '../../images/default-profile.png';
+import Utils from '../../utils';
 
 const Profile = () => {
 
@@ -53,12 +54,9 @@ const Profile = () => {
                                         src = defaultProfile;
                                     } else if (profileImage) {
                                         src = URL.createObjectURL(profileImage);
-                                        // return <img className="w-50 h-50" src={URL.createObjectURL(profileImage)} alt="" />;
                                     } else {
-                                        if (auth.profileImage) src = `http://localhost:8000/api/user/${auth._id}/profileImage`;
+                                        if (auth.profileImage) src = Utils.getProfileImageLink(auth._id);
                                         else src = defaultProfile;
-                                        // return <img className="w-50 h-50" src={`http://localhost:8000/api/user/${auth._id}/profileImage`} alt="" />;
-                                        // else return null;
                                     }
                                     return src;
                                 })();
