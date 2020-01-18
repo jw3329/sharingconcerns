@@ -110,7 +110,10 @@ const Comment = ({ id }) => {
         <div className="card m-2" key={key}>
             <div className="card-body">
                 <div className="row m-3">
-                    <div className="col-sm-2">{comment.user.username}</div>
+                    <div className="col-sm-2">
+                        <img className="w-100 h-100 rounded-circle" src={Utils.getProfileImageLink(comment.user._id, comment.user.profileImage)} alt="" />
+                        <p>{comment.user.username}</p>
+                    </div>
                     {
                         comment.edit ? (
                             <TextareaAutosize minRows={3} className="w-100 col-sm-7" style={{ resize: 'none' }}
@@ -197,7 +200,10 @@ const Comment = ({ id }) => {
         <div className="card m-3" key={key}>
             <div className="card-body">
                 <div className="row">
-                    <div className="col-sm-2">{reply.user.username}</div>
+                    <div className="col-sm-2">
+                        <img className="w-100 h-100 rounded-circle" src={Utils.getProfileImageLink(reply.user._id, reply.user.profileImage)} alt="" />
+                        <p>{reply.user.username}</p>
+                    </div>
                     {
                         reply.edit ? (
                             <TextareaAutosize minRows={3} className="w-100 col-sm-7" style={{ resize: 'none' }}

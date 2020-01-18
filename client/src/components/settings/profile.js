@@ -58,11 +58,12 @@ const Profile = () => {
                                         if (auth.profileImage) src = Utils.getProfileImageLink(auth._id);
                                         else src = defaultProfile;
                                     }
+                                    console.log(src)
                                     return src;
                                 })();
                                 return (
                                     <Fragment>
-                                        {<label htmlFor="profileImage"><img className="w-50 h-50" src={src} alt="" /></label>}
+                                        {<label htmlFor="profileImage"><img className="w-50 h-50" src={profileImage ? URL.createObjectURL(profileImage) : Utils.getProfileImageLink(auth._id, auth.profileImage)} alt="" /></label>}
                                         {src !== defaultProfile && <div className="my-2"><button className="btn btn-primary w-50" onClick={() => setProfileImage(null)}>Clear</button></div>}
                                     </Fragment>
                                 );

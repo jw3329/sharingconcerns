@@ -25,14 +25,17 @@ const Post = () => {
         return () => mounted = true;
     }, [auth.username]);
 
-    const generatePostCard = (post, key) => (
-        <Card style={{ width: '20rem' }} key={key}>
+    const generatePostCard = (post, key) => console.log(post) || (
+        <Card style={{ width: '30rem' }} key={key}>
             <Card.Body>
                 <div className="row">
-                    <div className="col-sm-7">
+                    <div className="col-sm-3">
+                        <img className="w-100 h-100 rounded-circle" src={Utils.getProfileImageLink(post.user._id, post.user.profileImage)} alt="" />
+                    </div>
+                    <div className="col-sm-6">
                         <Card.Title> <Link to={`/post/${post._id}`}>{post.title}</Link></Card.Title>
                     </div>
-                    <div className="col-sm-5" style={{ fontSize: "smaller" }}>
+                    <div className="col-sm-3" style={{ fontSize: "smaller" }}>
                         <div>{`${post.views} views`}</div>
                         <div>{post.user.username}</div>
                         <div>{Utils.toLocaleTimestamp(post.updateDate)}</div>
