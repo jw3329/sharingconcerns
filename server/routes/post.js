@@ -8,7 +8,7 @@ post.post('/', auth, async (req, res) => {
         const { title, description } = req.body;
         if (!title) throw new Error('Title is empty');
         if (!description) throw new Error('Description is empty');
-        const data = await (await new Post({ ...req.body, user: req.session.user._id }).save()).populate('user', { username: 1 }).execPopulate();
+        const data = await (await new Post({ ...req.body, user: req.session.user._id }).save()).populate('user', { username: 1, profileImage: 1 }).execPopulate();
         await User.findByIdAndUpdate(req.session.user._id, { $push: { posts: data._id } });
         res.status(201).json({ status: true, data });
     } catch (error) {
@@ -18,7 +18,7 @@ post.post('/', auth, async (req, res) => {
 
 post.get('/:postThread', async (req, res) => {
     try {
-        const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $inc: { views: 1 } }, { new: true }).populate('user', { username: 1 })).execPopulate();
+        const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $inc: { views: 1 } }, { new: true }).populate('user', { username: 1, profileImage: 1 })).execPopulate();
         await User.findByIdAndUpdate(req.session.user._id, { $push: { views: req.params.postThread } });
         if (!post) res.json({ status: false, message: 'No post thread found' });
         res.json({ status: true, post });
@@ -34,7 +34,7 @@ post.put('/:postThread', auth, async (req, res) => {
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         const { title, description } = req.body;
-        const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $set: { title, description, updateDate: Date.now() } }, { new: true }).populate('user', { username: 1 })).execPopulate();
+        const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $set: { title, description, updateDate: Date.now() } }, { new: true }).populate('user', { username: 1, profileImage: 1 })).execPopulate();
         if (!post) throw new Error('No post thread found');
         res.json({ status: true, post });
     } catch (error) {
@@ -58,7 +58,7 @@ post.delete('/:postThread', auth, async (req, res) => {
 post.get('/user/:username', auth, async (req, res) => {
     try {
         const { posts: postsId } = await User.findOne({ username: req.params.username }, 'posts');
-        const posts = await Post.find({ _id: { $in: postsId } }, null, { sort: { creationDate: -1 } }).populate('user', { username: 1 });
+        const posts = await Post.find({ _id: { $in: postsId } }, null, { sort: { creationDate: -1 } }).populate('user', { username: 1, profileImage: 1 });
         res.json({ status: true, posts });
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -100,7 +100,7 @@ post.post('/:id/dislike', auth, async (req, res) => {
 post.post('/:id/comment', auth, async (req, res) => {
     try {
         if (!req.body.description) throw new Error('Comment description required.')
-        const comment = await (await new Comment({ ...req.body, user: req.session.user._id }).save()).populate('user', { username: 1 }).execPopulate();
+        const comment = await (await new Comment({ ...req.body, user: req.session.user._id }).save()).populate('user', { username: 1, profileImage: 1 }).execPopulate();
         await Post.findByIdAndUpdate(req.params.id, { $push: { comments: comment._id } });
         await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: comment._id } });
         res.status(201).json({ status: true, comment });
@@ -112,7 +112,7 @@ post.post('/:id/comment', auth, async (req, res) => {
 post.get('/:id/comments', async (req, res) => {
     try {
         const postComments = await Post.findById(req.params.id, { _id: 0, comments: 1 });
-        const comments = await Comment.find({ _id: { $in: postComments.comments } }, null, { sort: { creationDate: 1 } }).populate('user', { username: 1 });
+        const comments = await Comment.find({ _id: { $in: postComments.comments } }, null, { sort: { creationDate: 1 } }).populate('user', { username: 1, profileImage: 1 });
         res.json({ status: true, comments });
     } catch (error) {
         res.json({ status: false, message: error.message });
@@ -126,7 +126,7 @@ post.put('/:id/comment/:commentId', auth, async (req, res) => {
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         if (!req.body.description) throw new Error('Comment description required.')
-        const comment = await (await Comment.findByIdAndUpdate(req.params.commentId, { $set: { ...req.body, updateDate: Date.now() } }, { new: true })).populate('user', { username: 1 }).execPopulate();
+        const comment = await (await Comment.findByIdAndUpdate(req.params.commentId, { $set: { ...req.body, updateDate: Date.now() } }, { new: true })).populate('user', { username: 1, profileImage: 1 }).execPopulate();
         res.json({ status: true, comment });
     } catch (error) {
         res.json({ status: false, message: error.message });

@@ -13,7 +13,7 @@ comment.post('/:id/reply', auth, async (req, res) => {
         const { description } = req.body;
         if (!description) throw new Error('Reply is empty');
         // if user already liked, unlike, if not like
-        const reply = await (await new Comment({ description, isReply: true, user: req.session.user._id }).save()).populate('user', { username: 1 }).execPopulate();
+        const reply = await (await new Comment({ description, isReply: true, user: req.session.user._id }).save()).populate('user', { username: 1, profileImage: 1 }).execPopulate();
         await Comment.findByIdAndUpdate(req.params.id, { $push: { replies: reply._id } });
         await User.findByIdAndUpdate(req.session.user._id, { $push: { replies: reply._id } });
         res.status(201).json({ status: true, reply });
@@ -29,7 +29,7 @@ comment.put('/:id/reply/:replyId', auth, async (req, res) => {
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
         if (!req.body.description) throw new Error('Reply description required.')
-        const reply = await (await Comment.findByIdAndUpdate(req.params.replyId, { $set: { ...req.body, updateDate: Date.now() } }, { new: true })).populate('user', { username: 1 }).execPopulate();
+        const reply = await (await Comment.findByIdAndUpdate(req.params.replyId, { $set: { ...req.body, updateDate: Date.now() } }, { new: true })).populate('user', { username: 1, profileImage: 1 }).execPopulate();
         res.json({ status: true, reply });
     } catch (error) {
         res.json({ status: false, message: error.message });
@@ -54,7 +54,7 @@ comment.delete('/:id/reply/:replyId', auth, async (req, res) => {
 comment.get('/:id/replies', async (req, res) => {
     try {
         const { replies: replyIds } = await Comment.findById({ _id: req.params.id }, { replies: 1 });
-        const replies = await Comment.find({ _id: { $in: replyIds } }, null, { sort: { creationDate: 1 } }).populate('user', { username: 1 });
+        const replies = await Comment.find({ _id: { $in: replyIds } }, null, { sort: { creationDate: 1 } }).populate('user', { username: 1, profileImage: 1 });
         res.json({ status: true, replies });
     } catch (error) {
         res.json({ status: false, message: error.message });
