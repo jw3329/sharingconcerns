@@ -19,8 +19,8 @@ const NavbarLayout = () => {
             <Nav className="mr-auto">
                 {auth && (
                     <Fragment>
+                        <Nav.Link as={NavLink} to={`/${auth.username}`}>My page</Nav.Link>
                         <Nav.Link as={NavLink} to="/post">Post</Nav.Link>
-                        <Nav.Link as={NavLink} to="/Pricing">Pricing</Nav.Link>
                     </Fragment>
                 )}
             </Nav>
