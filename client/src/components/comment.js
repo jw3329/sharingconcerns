@@ -111,7 +111,7 @@ const Comment = ({ id }) => {
             <div className="card-body">
                 <div className="row m-3">
                     <div className="col-sm-2">
-                        <img className="w-100 h-100 rounded-circle" src={Utils.getProfileImageLink(comment.user._id, comment.user.profileImage)} alt="" />
+                        <img className="rounded-circle" style={{ width: 125, height: 125 }} src={Utils.getProfileImageLink(comment.user._id, comment.user.profileImage)} alt="" />
                         <p>{comment.user.username}</p>
                     </div>
                     {
