@@ -47,9 +47,10 @@ user.post('/authorize', async (req, res) => {
         if (req.session.user) throw new Error('User already has signed in');
         const refinedUserFields = { ...userFields };
         delete refinedUserFields.password;
-        const user = (await User.findOne({ username: req.body.username }, refinedUserFields)).toObject();
+        let user = (await User.findOne({ username: req.body.username }, refinedUserFields));
         if (!user) throw new Error('User does not exist with given username');
         if (!await bcrypt.compare(req.body.password, user.password)) throw new Error('Password does not match');
+        user = user.toObject();
         delete user.password;
         req.session.user = user;
         res.json({ status: true, user });
@@ -70,9 +71,10 @@ user.post('/follow', auth, async (req, res) => {
         await User.findByIdAndUpdate(followerId, { [following ? '$pull' : '$push']: { followees: followeeId } });
         await User.findByIdAndUpdate(followeeId, { [following ? '$pull' : '$push']: { followers: followerId } });
 
-        res.json({ message: `Successfully ${following ? 'un' : ''}followed user` });
+        // res.json({ message: `Successfully ${following ? 'un' : ''}followed user` });
+        res.json({ status: true, following: !following, message: `Successfully ${following ? 'un' : ''}followed user` });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.json({ status: false, message: error.message });
     }
 });
 
@@ -83,9 +85,9 @@ user.get('/signout', auth, (req, res, next) => {
     });
 });
 
-user.get('/:id', async (req, res) => {
+user.get('/:username', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findOne({ username: req.params.username }, { password: 0 });
         res.json({ status: true, user });
     } catch (error) {
         res.json({ status: false, message: 'No user found' });
