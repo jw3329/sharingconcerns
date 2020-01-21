@@ -11,8 +11,6 @@ const Home = () => {
 
     document.title = 'Home';
 
-    console.log(activities)
-
     useEffect(() => {
         if (auth) {
             Axios.get('/user/activities')
@@ -39,6 +37,10 @@ const Home = () => {
                         <div>{`${activity.views} views`}</div>
                         <div>{activity.user.username}</div>
                         <div>{Utils.toLocaleTimestamp(activity.updateDate)}</div>
+                        <div className="d-flex justify-content-end">
+                            <span className="badge badge-success m-2">{activity.likes.length} likes</span>
+                            <span className="badge badge-danger m-2">{activity.dislikes.length} dislikes</span>
+                        </div>
                     </div>
                 </div>
             </div>
