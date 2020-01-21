@@ -17,7 +17,7 @@ class Utils {
     }
 
     static getImageElement(userId, profileImage) {
-        return <img className="w-100 h-100 rounded-circle" src={this.getProfileImageLink(userId, profileImage)} alt="" />
+        return <img className="w-100 rounded-circle" src={this.getProfileImageLink(userId, profileImage)} alt="" />
     }
 }
 

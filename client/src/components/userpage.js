@@ -33,7 +33,7 @@ const UserPage = props => {
         try {
             const { status, following, message } = (await Axios.post('/user/follow', { username })).data;
             if (!status) throw new Error(message);
-            user.followers = following ? [...user.followers, auth._id] : user.followers.filter(followerId => followerId !== auth._id);
+            user.followers = following ? [...user.followers, { _id: auth._id, username: auth.username, profileImage: auth.profileImage }] : user.followers.filter(follower => follower._id !== auth._id);
             setUser({ ...user });
         } catch (error) {
             console.log(error.message);
@@ -53,15 +53,15 @@ const UserPage = props => {
                 </div>
                 <div className="row p-3">
                     <div className="col-sm-6 border-right">
-                        <h3>Post</h3>
+                        <h3 className="d-flex justify-content-center">Post</h3>
                         <PostCards posts={posts} />
                     </div>
-                    <div className="col-sm-3 border-right text-center">
-                        <h3>Followers</h3>
+                    <div className="col-sm-3 border-right">
+                        <h3 className="d-flex justify-content-center">Followers</h3>
                         <Follow follows={user.followers} />
                     </div>
-                    <div className="col-sm-3 text-center">
-                        <h3>Followees</h3>
+                    <div className="col-sm-3">
+                        <h3 className="d-flex justify-content-center">Followees</h3>
                         <Follow follows={user.followees} />
                     </div>
                 </div>

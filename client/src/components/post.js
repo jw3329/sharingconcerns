@@ -30,7 +30,7 @@ const Post = () => {
             <Card.Body>
                 <div className="row">
                     <div className="col-sm-3">
-                        <img className="w-100 h-100 rounded-circle" src={Utils.getProfileImageLink(post.user._id, post.user.profileImage)} alt="" />
+                        {Utils.getImageElement(post.user._id, post.user.profileImage)}
                     </div>
                     <div className="col-sm-6">
                         <Card.Title> <Link to={`/post/${post._id}`}>{post.title}</Link></Card.Title>
