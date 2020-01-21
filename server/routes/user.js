@@ -1,6 +1,6 @@
 const express = require('express');
 const user = express.Router();
-const { User } = require('../models');
+const { User, Post } = require('../models');
 const bcrypt = require('bcrypt');
 const { auth } = require('../middlewares/index');
 const multer = require('multer');
@@ -85,17 +85,6 @@ user.get('/signout', auth, (req, res, next) => {
     });
 });
 
-user.get('/:username', async (req, res) => {
-    try {
-        const user = await (await User.findOne({ username: req.params.username }, { password: 0 })
-        .populate('followers', {profileImage: 1, username: 1})
-        .populate('followees', {profileImage: 1, username: 1})).execPopulate();
-        res.json({ status: true, user });
-    } catch (error) {
-        res.json({ status: false, message: 'No user found' });
-    }
-});
-
 user.put('/', auth, async (req, res) => {
     try {
         const user = await User.findByIdAndUpdate(req.session.user._id,
@@ -129,6 +118,27 @@ user.get('/:id/profileImage', auth, async (req, res) => {
     }
 });
 
+user.get('/activities', async (req, res) => {
+    try {
+        // get followees
+        const { followees } = await User.findById(req.session.user._id, { followees: 1 });
+        const activities = await Post.find({ user: { $in: [req.session.user._id, ...followees] } }, null, { sort: { updateDate: -1 } }).populate('user', { username: 1, profileImage: 1 });
+        res.json({ status: true, activities });
+    } catch (error) {
+        res.json({ status: false, message: error.message });
+    }
+});
+
+user.get('/:username', async (req, res) => {
+    try {
+        const user = await (await User.findOne({ username: req.params.username }, { password: 0 })
+            .populate('followers', { profileImage: 1, username: 1 })
+            .populate('followees', { profileImage: 1, username: 1 })).execPopulate();
+        res.json({ status: true, user });
+    } catch (error) {
+        res.json({ status: false, message: 'No user found' });
+    }
+});
 
 user.get('/', (req, res) => {
     if (req.session.user) res.json({ status: true, user: req.session.user });
