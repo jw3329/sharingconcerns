@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const PostCards = ({ posts }) => {
 
     const generatePostCard = (post, key) => (
-        <Card style={{ width: '30rem' }} key={key}>
+        <Card className="my-3" style={{ width: '30rem' }} key={key}>
             <Card.Body>
                 <div className="row">
                     <div className="col-sm-3">
