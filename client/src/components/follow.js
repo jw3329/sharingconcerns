@@ -1,5 +1,6 @@
 import React from 'react';
 import Utils from '../utils';
+import { Link } from 'react-router-dom';
 
 const Follow = ({ follows }) => {
 
@@ -11,7 +12,7 @@ const Follow = ({ follows }) => {
                         {Utils.getImageElement(follow._id, follow.profileImage)}
                     </div>
                     <div className="col-sm-8">
-                        {follow.username}
+                        <Link to={`/${follow.username}`}>{follow.username}</Link>
                     </div>
                 </div>
             </div>
