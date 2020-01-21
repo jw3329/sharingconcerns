@@ -1,4 +1,5 @@
 import defaultProfile from './images/default-profile.png';
+import React from 'react';
 
 class Utils {
 
@@ -13,6 +14,10 @@ class Utils {
 
     static getProfileImageLink(userId, profileImage) {
         return profileImage ? `${this.server}/api/user/${userId}/profileImage` : defaultProfile;
+    }
+
+    static getImageElement(userId, profileImage) {
+        return <img className="w-100 h-100 rounded-circle" src={this.getProfileImageLink(userId, profileImage)} alt="" />
     }
 }
 
