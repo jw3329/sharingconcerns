@@ -25,7 +25,7 @@ const Post = () => {
         return () => mounted = true;
     }, [auth.username]);
 
-    const generatePostCard = (post, key) => console.log(post) || (
+    const generatePostCard = (post, key) => (
         <Card style={{ width: '30rem' }} key={key}>
             <Card.Body>
                 <div className="row">

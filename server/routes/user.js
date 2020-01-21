@@ -87,7 +87,9 @@ user.get('/signout', auth, (req, res, next) => {
 
 user.get('/:username', async (req, res) => {
     try {
-        const user = await User.findOne({ username: req.params.username }, { password: 0 });
+        const user = await (await User.findOne({ username: req.params.username }, { password: 0 })
+        .populate('followers', {profileImage: 1, username: 1})
+        .populate('followees', {profileImage: 1, username: 1})).execPopulate();
         res.json({ status: true, user });
     } catch (error) {
         res.json({ status: false, message: 'No user found' });

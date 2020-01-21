@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from './components/navbar';
-import { Container } from 'react-bootstrap';
 import axios from 'axios';
 import AuthContext from './contexts/auth';
 import Routes from './routes';
@@ -24,9 +23,9 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Navbar />
-        <Container className="mt-3">
+        <div className="container mt-3">
           <Routes />
-        </Container>
+        </div>
       </BrowserRouter>
     </div>
   );
