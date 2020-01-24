@@ -59,7 +59,8 @@ const UserSchema = new Mongoose.Schema({
     url: String,
     company: String,
     location: String,
-    profileImage: String
+    profileImage: String,
+    notifications: [{ type: Mongoose.Schema.Types.ObjectId, ref: 'Notification' }]
 });
 
 const User = Mongoose.model('User', UserSchema);
