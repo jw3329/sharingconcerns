@@ -20,6 +20,7 @@ const NavbarLayout = () => {
                 {auth && (
                     <Fragment>
                         <Nav.Link as={NavLink} to={`/${auth.username}`}>My page</Nav.Link>
+                        <Nav.Link as={NavLink} to="/all-posts">All posts</Nav.Link>
                         <Nav.Link as={NavLink} to="/post">Post</Nav.Link>
                     </Fragment>
                 )}

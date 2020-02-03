@@ -8,6 +8,7 @@ import PostThread from '../components/post_thread';
 import AuthContext from '../contexts/auth';
 import Settings from '../components/settings';
 import UserPage from '../components/userpage';
+import AllPosts from '../components/all_posts';
 
 
 const RoutesIndex = () => {
@@ -25,6 +26,7 @@ const RoutesIndex = () => {
                 '/post': { component: Post, exact: true },
                 '/post/:id': { component: PostThread, exact: true },
                 '/settings': { component: Settings, exact: false },
+                '/all-posts': { component: AllPosts, exact: true },
                 '/:username': { component: UserPage, exact: false }
             }
             setRoutes(routes => ({ ...routes, ...authRoutes }));
