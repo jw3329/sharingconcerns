@@ -17,6 +17,15 @@ post.post('/', auth, async (req, res) => {
     }
 });
 
+post.get('/', async (req, res) => {
+    try {
+        const posts = await Post.find({}, null, { sort: { updateDate: -1 } }).populate('user', { username: 1, profileImage: 1 });
+        res.json({ status: true, posts });
+    } catch (error) {
+        res.status(400).json({ status: false, message: error.message });
+    }
+});
+
 post.get('/:postThread', async (req, res) => {
     try {
         const post = await (await Post.findByIdAndUpdate(req.params.postThread, { $inc: { views: 1 } }, { new: true }).populate('user', { username: 1, profileImage: 1 })).execPopulate();
@@ -24,7 +33,7 @@ post.get('/:postThread', async (req, res) => {
         if (!post) res.json({ status: false, message: 'No post thread found' });
         res.json({ status: true, post });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ status: false, message: error.message });
     }
 });
 
