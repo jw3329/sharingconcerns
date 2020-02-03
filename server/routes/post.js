@@ -9,8 +9,8 @@ post.post('/', auth, async (req, res) => {
         if (!title) throw new Error('Title is empty');
         if (!description) throw new Error('Description is empty');
         const data = await (await new Post({ ...req.body, user: req.session.user._id }).save()).populate('user', { username: 1, profileImage: 1 }).execPopulate();
-        const notification = await new Notification({ from: req.session.user._id, to: req.session.user._id, behave: 'post', object: data._id }).save();
-        await User.findByIdAndUpdate(req.session.user._id, { $push: { posts: data._id, notifications: notification._id } });
+        // const notification = await new Notification({ from: req.session.user._id, to: req.session.user._id, behave: 'post', object: data._id }).save();
+        await User.findByIdAndUpdate(req.session.user._id, { $push: { posts: data._id } });
         res.status(201).json({ status: true, data });
     } catch (error) {
         res.json({ status: false, message: error.message });
