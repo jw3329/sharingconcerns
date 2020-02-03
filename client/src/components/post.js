@@ -1,8 +1,7 @@
 import React, { Fragment, useEffect, useContext, useState } from 'react';
-import { Row, Col, Button, Card, Form } from 'react-bootstrap';
+import { Row, Col, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import AuthContext from '../contexts/auth';
-import { Link } from 'react-router-dom';
 import Utils from '../utils';
 import TextareaAutoresize from 'react-textarea-autosize';
 
@@ -24,26 +23,6 @@ const Post = () => {
             .catch(err => console.log(err));
         return () => mounted = true;
     }, [auth.username]);
-
-    const generatePostCard = (post, key) => (
-        <Card style={{ width: '30rem' }} key={key}>
-            <Card.Body>
-                <div className="row">
-                    <div className="col-sm-3">
-                        {Utils.getImageElement(post.user._id, post.user.profileImage)}
-                    </div>
-                    <div className="col-sm-6">
-                        <Card.Title> <Link to={`/post/${post._id}`}>{post.title}</Link></Card.Title>
-                    </div>
-                    <div className="col-sm-3" style={{ fontSize: "smaller" }}>
-                        <div>{`${post.views} views`}</div>
-                        <div>{post.user.username}</div>
-                        <div>{Utils.toLocaleTimestamp(post.updateDate)}</div>
-                    </div>
-                </div>
-            </Card.Body>
-        </Card>
-    )
 
     const handleChange = e => {
         setCreate({ ...create, [e.target.id]: e.target.value });
@@ -70,7 +49,7 @@ const Post = () => {
                 <Col sm={6}>
                     <h1>My Post</h1>
                     <div className="posts">
-                        {posts.map((post, key) => generatePostCard(post, key))}
+                        {Utils.getPostCards(posts)}
                     </div>
                 </Col>
                 <Col xs={6}>

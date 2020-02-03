@@ -2,8 +2,8 @@ import React, { useEffect, useState, Fragment, useContext } from 'react';
 import Axios from 'axios';
 import Error from '../components/error';
 import AuthContext from '../contexts/auth';
-import PostCards from './postcards';
 import Follow from './follow';
+import Utils from '../utils';
 
 const UserPage = props => {
 
@@ -54,7 +54,7 @@ const UserPage = props => {
                 <div className="row p-3">
                     <div className="col-sm-6 border-right">
                         <h3 className="d-flex justify-content-center">Post</h3>
-                        <PostCards posts={posts} />
+                        {Utils.getPostCards(posts)}
                     </div>
                     <div className="col-sm-3 border-right">
                         <h3 className="d-flex justify-content-center">Followers</h3>

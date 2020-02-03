@@ -1,5 +1,6 @@
 import defaultProfile from './images/default-profile.png';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 class Utils {
 
@@ -31,6 +32,35 @@ class Utils {
         } else {
             return Math.round(elapsed / msPerYear) + ' years ago';
         }
+    }
+
+    static getPostCards(posts) {
+
+        const generatePostCard = (post, key) => (
+            <div className="card m-3" key={key}>
+                <div className="card-body">
+                    <div className="row">
+                        <div className="col-sm-3">
+                            {Utils.getImageElement(post.user._id, post.user.profileImage)}
+                        </div>
+                        <div className="col-sm-6">
+                            <Link to={`/post/${post._id}`}>{post.title}</Link>
+                        </div>
+                        <div className="col-sm-3" style={{ fontSize: "smaller" }}>
+                            <div>{`${post.views} views`}</div>
+                            <div>{post.user.username}</div>
+                            <div>{Utils.toLocaleTimestamp(post.updateDate)}</div>
+                            <div className="d-flex justify-content-end">
+                                <span className="badge badge-success m-2">{post.likes.length} likes</span>
+                                <span className="badge badge-danger m-2">{post.dislikes.length} dislikes</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+
+        return posts.map((post, key) => generatePostCard(post, key))
     }
 
     static getProfileImageLink(userId, profileImage) {
