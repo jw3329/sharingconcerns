@@ -21,8 +21,8 @@ post.post('/', auth, async (req, res) => {
 post.get('/', async (req, res) => {
     try {
         const posts = await Post.find({}).populate('user', { username: 1, profileImage: 1 });
-        posts.sort((a, b) => Utils.hot(a.likes.length, a.dislikes.length, a.updateDate) - Utils.hot(b.likes.length, b.dislikes.length, b.updateDate));
-        res.json({ status: true, posts: posts.reverse() });
+        posts.sort((a, b) => Utils.hot(b.likes.length, b.dislikes.length, b.updateDate) - Utils.hot(a.likes.length, a.dislikes.length, a.updateDate));
+        res.json({ status: true, posts });
     } catch (error) {
         res.status(400).json({ status: false, message: error.message });
     }
@@ -124,7 +124,8 @@ post.post('/:id/comment', auth, async (req, res) => {
 post.get('/:id/comments', async (req, res) => {
     try {
         const postComments = await Post.findById(req.params.id, { _id: 0, comments: 1 });
-        const comments = await Comment.find({ _id: { $in: postComments.comments } }, null, { sort: { creationDate: 1 } }).populate('user', { username: 1, profileImage: 1 });
+        const comments = await Comment.find({ _id: { $in: postComments.comments } }).populate('user', { username: 1, profileImage: 1 });
+        comments.sort((a, b) => Utils.commentRanking(a.likes.length, a.dislikes.length) - Utils.commentRanking(b.likes.length, b.dislikes.length));
         res.json({ status: true, comments });
     } catch (error) {
         res.json({ status: false, message: error.message });

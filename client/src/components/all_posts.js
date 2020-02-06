@@ -4,6 +4,8 @@ import Axios from 'axios';
 
 const AllPosts = () => {
 
+    document.title = 'All posts';
+
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
