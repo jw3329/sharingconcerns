@@ -18,6 +18,19 @@ class Utils {
         return sign * order + seconds / 45000;
     }
 
+    static commentRanking(ups, downs) {
+        const n = ups + downs;
+        if (n === 0) return 0;
+        const z = 1.281551565545;
+        const p = ups / n;
+
+        const left = p + 1 / (2 * n) * z * z;
+        const right = z * Math.sqrt(p * (1 - p) / n + z * z / (4 * n * n));
+        const under = 1 + 1 / n * z * z;
+
+        return (left - right) / under;
+    }
+
 }
 
 module.exports = Utils;
