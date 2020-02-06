@@ -1,5 +1,4 @@
 import React, { useEffect, useState, Fragment, useContext } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Utils from '../utils';
 import Comment from './comment';
@@ -89,10 +88,7 @@ const PostThread = props => {
 
     return loaded && (
         <Fragment>
-            <div className="m-2">
-                <Link to='/post'>Go back</Link>
-            </div>
-            <div className="card">
+            <div className="m-2 card">
                 {
                     editting ? (
                         <input type="text" className="d-flex justify-content-center text-center" onChange={e => setEditForm({ ...editForm, title: e.target.value })} defaultValue={editForm.title} />
