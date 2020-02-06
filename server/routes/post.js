@@ -2,6 +2,7 @@ const express = require('express');
 const post = express.Router();
 const { Post, User, Comment, Notification } = require('../models');
 const { auth } = require('../middlewares');
+const Utils = require('../utils');
 
 post.post('/', auth, async (req, res) => {
     try {
@@ -19,8 +20,9 @@ post.post('/', auth, async (req, res) => {
 
 post.get('/', async (req, res) => {
     try {
-        const posts = await Post.find({}, null, { sort: { updateDate: -1 } }).populate('user', { username: 1, profileImage: 1 });
-        res.json({ status: true, posts });
+        const posts = await Post.find({}).populate('user', { username: 1, profileImage: 1 });
+        posts.sort((a, b) => Utils.hot(a.likes.length, a.dislikes.length, a.updateDate) - Utils.hot(b.likes.length, b.dislikes.length, b.updateDate));
+        res.json({ status: true, posts: posts.reverse() });
     } catch (error) {
         res.status(400).json({ status: false, message: error.message });
     }
