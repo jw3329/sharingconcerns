@@ -1,6 +1,6 @@
 const express = require('express');
 const user = express.Router();
-const { User, Post } = require('../models');
+const { User, Post, Notification } = require('../models');
 const bcrypt = require('bcrypt');
 const { auth } = require('../middlewares/index');
 const multer = require('multer');
@@ -67,11 +67,16 @@ user.post('/follow', auth, async (req, res) => {
         if (!followeeId) throw new Error('The user does not exist');
         const { followees, _id: followerId } = await User.findById(req.session.user._id, { followees: 1 });
         const following = followees.includes(followeeId);
+        // let notification = null;
+        // if (!following) {
+        //     notification = await new Notification({ triggered_by: req.session.user._id, event: 'follow' }).save();
+        // } else {
+        //     notification = await Notification.findOneAndUpdate({triggered_by: req.session.user._id, event:'follow'})
+        // }
 
         await User.findByIdAndUpdate(followerId, { [following ? '$pull' : '$push']: { followees: followeeId } });
         await User.findByIdAndUpdate(followeeId, { [following ? '$pull' : '$push']: { followers: followerId } });
 
-        // res.json({ message: `Successfully ${following ? 'un' : ''}followed user` });
         res.json({ status: true, following: !following, message: `Successfully ${following ? 'un' : ''}followed user` });
     } catch (error) {
         res.json({ status: false, message: error.message });

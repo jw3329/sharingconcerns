@@ -1,10 +1,14 @@
 const Mongoose = require('../db');
 
 const NotificationSchema = new Mongoose.Schema({
-    from: { type: Mongoose.Schema.Types.ObjectId, ref: "User" },
-    to: { type: Mongoose.Schema.Types.ObjectId, ref: "User" },
-    behave: { type: String, enum: ['post', 'comment', 'reply', 'like', 'dislike'] },
-    object: { type: Mongoose.Schema.Types.ObjectId },
+    triggered_user: { type: Mongoose.Schema.Types.ObjectId, ref: "User", require: true },
+    target_user: { type: Mongoose.Schema.Types.ObjectId, ref: "User", require: true },
+    behavior: { type: String, enum: ['like', 'follow', 'comment'], require: true },
+    object: new Mongoose.Schema({
+        object_id: Mongoose.Schema.Types.ObjectId,
+        behavior: { type: String, enum: ['comment', 'post'] }
+    }),
+    read: { type: Boolean, default: false },
     creationDate: { type: Date, require: true, default: Date.now }
 });
 
