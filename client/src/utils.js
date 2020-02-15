@@ -50,6 +50,7 @@ class Utils {
                             <div>{`${post.views} views`}</div>
                             <div>{post.user.username}</div>
                             <div>{Utils.toLocaleTimestamp(post.updateDate)}</div>
+                            <div>{`${post.comments.length} comments`}</div>
                             <div className="d-flex justify-content-end">
                                 <span className="badge badge-success m-2">{post.likes.length} likes</span>
                                 <span className="badge badge-danger m-2">{post.dislikes.length} dislikes</span>
