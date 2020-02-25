@@ -42,5 +42,6 @@ services:
 
   redis:
     image: redis
-    expose:
-      - 6379
+    network_mode: host
+    ports:
+      - "6379:6379"
