@@ -113,8 +113,22 @@ post.post('/:id/comment', auth, async (req, res) => {
     try {
         if (!req.body.description) throw new Error('Comment description required.')
         const comment = await (await new Comment({ ...req.body, user: req.session.user._id }).save()).populate('user', { username: 1, profileImage: 1 }).execPopulate();
+        // create notification if commented user is not same as posted user
+        let notification = null;
+        if (comment.user._id != req.session.user._id) {
+            notification = await new Notification({
+                triggered_user: req.session.user._id,
+                target_user: comment.user._id,
+                behavior: 'comment',
+                object: {
+                    object_id: req.params.id,
+                    behavior: 'post'
+                }
+            }).save();
+        }
+
         await Post.findByIdAndUpdate(req.params.id, { $push: { comments: comment._id } });
-        await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: comment._id } });
+        await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: comment._id, ...notification && { notifications: notification._id } } });
         res.status(201).json({ status: true, comment });
     } catch (error) {
         res.json({ status: false, message: error.message });
@@ -138,7 +152,7 @@ post.put('/:id/comment/:commentId', auth, async (req, res) => {
         const { user } = await Comment.findById(req.params.commentId, { user: 1 });
         // if it does not match with current user, then make error
         if (user != req.session.user._id) throw new Error('Current user is not the creator');
-        if (!req.body.description) throw new Error('Comment description required.')
+        if (!req.body.description) throw new Error('Comment description required.');
         const comment = await (await Comment.findByIdAndUpdate(req.params.commentId, { $set: { ...req.body, updateDate: Date.now() } }, { new: true })).populate('user', { username: 1, profileImage: 1 }).execPopulate();
         res.json({ status: true, comment });
     } catch (error) {
@@ -155,10 +169,21 @@ post.delete('/:id/comment/:commentId', auth, async (req, res) => {
         // delete comment first
         const { replies } = await Comment.findByIdAndDelete(req.params.commentId, { replies: 1 });
         await Comment.deleteMany({ _id: replies });
+        // delete notification first, then get the variable accordingly
+        const notification = await Notification.findOneAndDelete({
+            triggered_user: req.session.user._id,
+            target_user: (await Post.findById(req.params.id, { user: 1 })).user,
+            behavior: 'comment',
+            object: {
+                object_id: req.params.id,
+                behavior: 'post'
+            }
+        });
+        console.log(notification)
         // delete post component
         await Post.findByIdAndUpdate(req.params.id, { $pull: { comments: req.params.commentId } });
-        await User.findByIdAndUpdate(user, { $pull: { comments: req.params.commentId } });
-        res.status(201).json({ status: true });
+        await User.findByIdAndUpdate(user, { $pull: { comments: req.params.commentId, ...notification && { notifications: notification._id } } });
+        res.json({ status: true });
     } catch (error) {
         res.json({ status: false, message: error.message });
     }
