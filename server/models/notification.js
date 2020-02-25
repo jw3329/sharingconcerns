@@ -4,6 +4,7 @@ const NotificationSchema = new Mongoose.Schema({
     triggered_user: { type: Mongoose.Schema.Types.ObjectId, ref: "User", require: true },
     target_user: { type: Mongoose.Schema.Types.ObjectId, ref: "User", require: true },
     behavior: { type: String, enum: ['like', 'follow', 'comment'], require: true },
+    behavior_id: Mongoose.Schema.Types.ObjectId,
     object: new Mongoose.Schema({
         object_id: Mongoose.Schema.Types.ObjectId,
         behavior: { type: String, enum: ['comment', 'post'] }
