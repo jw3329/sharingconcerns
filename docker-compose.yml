@@ -24,6 +24,8 @@ services:
       - "8000:8000"
     depends_on:
       - database
+    links:
+      - redis
   client:
     network_mode: host
     build: client
@@ -37,3 +39,8 @@ services:
       - "3000:3000"
     depends_on:
       - server
+
+  redis:
+    image: redis
+    expose:
+      - 6379
