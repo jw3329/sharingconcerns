@@ -181,6 +181,7 @@ post.delete('/:id/comment/:commentId', auth, async (req, res) => {
             }
         });
         console.log(notification);
+        console.log('haha')
         // delete post component
         await Post.findByIdAndUpdate(req.params.id, { $pull: { comments: req.params.commentId } });
         await User.findByIdAndUpdate(user, { $pull: { comments: req.params.commentId, ...notification && { notifications: notification._id } } });

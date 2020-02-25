@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const { auth } = require('../middlewares/index');
 const multer = require('multer');
 const path = require('path');
+const redisClient = require('../redis');
 
 const storage = multer.diskStorage({
     destination: './images',
@@ -53,6 +54,8 @@ user.post('/authorize', async (req, res) => {
         user = user.toObject();
         delete user.password;
         req.session.user = user;
+        // store in redis also
+        await redisClient.setAsync('user', JSON.stringify(user));
         res.json({ status: true, user });
     } catch (error) {
         res.json({ status: false, message: error.message });
@@ -93,8 +96,10 @@ user.post('/follow', auth, async (req, res) => {
 });
 
 user.get('/signout', auth, (req, res, next) => {
-    req.session.destroy(err => {
+    req.session.destroy(async err => {
         if (err) res.json({ status: false, message: err });
+        // redis deletion
+        await redisClient.delAsync('user');
         res.json({ status: true, message: 'Successfully deleted' });
     });
 });
@@ -154,8 +159,12 @@ user.get('/:username', async (req, res) => {
     }
 });
 
-user.get('/', (req, res) => {
-    if (req.session.user) res.json({ status: true, user: req.session.user });
+user.get('/', async (req, res) => {
+    const redisUser = JSON.parse(await redisClient.getAsync('user'));
+    if (redisUser) {
+        req.session.user = redisUser;
+        res.json({ status: true, user: redisUser });
+    }
     else res.json({ status: false, message: 'No user found' });
 });
 
