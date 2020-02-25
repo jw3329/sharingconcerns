@@ -120,13 +120,13 @@ post.post('/:id/comment', auth, async (req, res) => {
                 triggered_user: req.session.user._id,
                 target_user: comment.user._id,
                 behavior: 'comment',
+                behavior_id: comment._id,
                 object: {
                     object_id: req.params.id,
                     behavior: 'post'
                 }
             }).save();
         }
-
         await Post.findByIdAndUpdate(req.params.id, { $push: { comments: comment._id } });
         await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: comment._id, ...notification && { notifications: notification._id } } });
         res.status(201).json({ status: true, comment });
@@ -174,12 +174,13 @@ post.delete('/:id/comment/:commentId', auth, async (req, res) => {
             triggered_user: req.session.user._id,
             target_user: (await Post.findById(req.params.id, { user: 1 })).user,
             behavior: 'comment',
+            behavior_id: req.params.commentId,
             object: {
                 object_id: req.params.id,
                 behavior: 'post'
             }
         });
-        console.log(notification)
+        console.log(notification);
         // delete post component
         await Post.findByIdAndUpdate(req.params.id, { $pull: { comments: req.params.commentId } });
         await User.findByIdAndUpdate(user, { $pull: { comments: req.params.commentId, ...notification && { notifications: notification._id } } });
