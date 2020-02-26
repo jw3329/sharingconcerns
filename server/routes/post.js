@@ -115,10 +115,11 @@ post.post('/:id/comment', auth, async (req, res) => {
         const comment = await (await new Comment({ ...req.body, user: req.session.user._id }).save()).populate('user', { username: 1, profileImage: 1 }).execPopulate();
         // create notification if commented user is not same as posted user
         let notification = null;
-        if (comment.user._id != req.session.user._id) {
+        const ownerId = (await Post.findById(req.params.id, { user: 1 })).user;
+        if (req.session.user._id != ownerId) {
             notification = await new Notification({
                 triggered_user: req.session.user._id,
-                target_user: comment.user._id,
+                target_user: ownerId,
                 behavior: 'comment',
                 behavior_id: comment._id,
                 object: {
@@ -127,6 +128,7 @@ post.post('/:id/comment', auth, async (req, res) => {
                 }
             }).save();
         }
+        console.log(notification)
         await Post.findByIdAndUpdate(req.params.id, { $push: { comments: comment._id } });
         await User.findByIdAndUpdate(req.session.user._id, { $push: { comments: comment._id, ...notification && { notifications: notification._id } } });
         res.status(201).json({ status: true, comment });
@@ -170,6 +172,7 @@ post.delete('/:id/comment/:commentId', auth, async (req, res) => {
         const { replies } = await Comment.findByIdAndDelete(req.params.commentId, { replies: 1 });
         await Comment.deleteMany({ _id: replies });
         // delete notification first, then get the variable accordingly
+        console.log(req.session.user._id, (await Post.findById(req.params.id, { user: 1 })).user, req.params.commentId, req.params.id)
         const notification = await Notification.findOneAndDelete({
             triggered_user: req.session.user._id,
             target_user: (await Post.findById(req.params.id, { user: 1 })).user,
@@ -180,8 +183,7 @@ post.delete('/:id/comment/:commentId', auth, async (req, res) => {
                 behavior: 'post'
             }
         });
-        console.log(notification);
-        console.log('haha')
+        console.log(notification)
         // delete post component
         await Post.findByIdAndUpdate(req.params.id, { $pull: { comments: req.params.commentId } });
         await User.findByIdAndUpdate(user, { $pull: { comments: req.params.commentId, ...notification && { notifications: notification._id } } });

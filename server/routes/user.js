@@ -93,10 +93,8 @@ user.post('/follow', auth, async (req, res) => {
 });
 
 user.get('/signout', auth, (req, res, next) => {
-    req.session.destroy(async err => {
-        if (err) res.json({ status: false, message: err });
-        res.json({ status: true, message: 'Successfully deleted' });
-    });
+    req.session.user = null;
+    res.json({ status: true, message: 'Successfully deleted' });
 });
 
 user.put('/', auth, async (req, res) => {
