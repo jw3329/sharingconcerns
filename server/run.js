@@ -2,6 +2,8 @@ const express = require('express');
 
 const session = require('express-session');
 
+const cookieSession = require('cookie-session');
+
 const bodyParser = require('body-parser');
 
 const cors = require('cors');
@@ -14,10 +16,12 @@ const api = require('./routes/api');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(session({
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: true
+app.use(cookieSession({
+    // secret: 'secret',
+    // resave: true,
+    // saveUninitialized: true
+    name: 'session',
+    secret: 'secret'
 }));
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use('/api', api);
